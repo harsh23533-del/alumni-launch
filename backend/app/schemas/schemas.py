@@ -1,0 +1,251 @@
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
+
+
+# ---------- Auth ----------
+
+class AlumniSignupRequest(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    batch: Optional[str] = None
+    branch: Optional[str] = None
+    company: Optional[str] = None
+    designation: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    phone: Optional[str] = None
+
+
+class StudentSignupRequest(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    branch: Optional[str] = None
+    year: Optional[str] = None
+    skills: Optional[str] = None
+
+
+class CompanySignupRequest(BaseModel):
+    email: EmailStr
+    password: str
+    company_name: str
+    website: Optional[str] = None
+    industry: Optional[str] = None
+    description: Optional[str] = None
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class CheckEmailResponse(BaseModel):
+    exists_in_import: bool
+    is_claimed: bool
+    message: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    role: str
+    is_admin: bool = False
+
+
+class SignupPendingResponse(BaseModel):
+    status: str = "pending"
+    message: str
+
+
+# ---------- Profiles ----------
+
+class AlumniProfileOut(BaseModel):
+    id: str
+    email: str
+    name: Optional[str]
+    batch: Optional[str]
+    branch: Optional[str]
+    company: Optional[str]
+    designation: Optional[str]
+    linkedin_url: Optional[str]
+    is_claimed: bool
+
+    class Config:
+        from_attributes = True
+
+
+class StudentProfileOut(BaseModel):
+    id: str
+    name: str
+    branch: Optional[str]
+    year: Optional[str]
+    skills: Optional[str]
+    resume_url: Optional[str]
+    approval_status: str
+
+    class Config:
+        from_attributes = True
+
+
+class CompanyProfileOut(BaseModel):
+    id: str
+    company_name: str
+    website: Optional[str]
+    industry: Optional[str]
+    description: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Admin ----------
+
+class PendingStudentOut(BaseModel):
+    id: str
+    user_id: str
+    email: str
+    name: str
+    branch: Optional[str]
+    year: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Jobs ----------
+
+class JobCreate(BaseModel):
+    title: str
+    job_type: str = "internship"  # internship | full_time | part_time
+    location: Optional[str] = None
+    description: Optional[str] = None
+    skills_required: Optional[str] = None
+    stipend_or_salary: Optional[str] = None
+    apply_link: Optional[str] = None
+
+
+class JobOut(BaseModel):
+    id: str
+    title: str
+    job_type: str
+    location: Optional[str]
+    description: Optional[str]
+    skills_required: Optional[str]
+    stipend_or_salary: Optional[str]
+    apply_link: Optional[str]
+    is_active: bool
+    created_at: datetime
+    posted_by_name: Optional[str] = None
+    posted_by_type: Optional[str] = None  # "alumni" | "company"
+
+    class Config:
+        from_attributes = True
+
+
+class JobApplicationCreate(BaseModel):
+    job_id: str
+    message: Optional[str] = None
+
+
+class JobApplicationOut(BaseModel):
+    id: str
+    job_id: str
+    student_id: str
+    message: Optional[str]
+    resume_url: Optional[str]
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class JobApplicationStatusUpdate(BaseModel):
+    status: str  # "shortlisted" | "rejected" | "hired"
+
+
+# ---------- Notifications ----------
+
+class NotificationOut(BaseModel):
+    id: str
+    title: str
+    message: Optional[str]
+    link: Optional[str]
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Chat ----------
+
+class ChatMessageOut(BaseModel):
+    id: str
+    sender_name: str
+    sender_role: str
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Startups ----------
+
+class StartupCreate(BaseModel):
+    title: str
+    domain: Optional[str] = None
+    stage: Optional[str] = None
+    description: Optional[str] = None
+    roles_needed: Optional[str] = None
+    skills_required: Optional[str] = None
+    team_size_needed: Optional[int] = None
+    is_paid: bool = False
+    compensation_details: Optional[str] = None
+
+
+class StartupOut(BaseModel):
+    id: str
+    title: str
+    domain: Optional[str]
+    stage: Optional[str]
+    description: Optional[str]
+    roles_needed: Optional[str]
+    skills_required: Optional[str]
+    team_size_needed: Optional[int]
+    is_paid: bool
+    compensation_details: Optional[str]
+    is_active: bool
+    created_at: datetime
+    alumni_id: str
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Applications ----------
+
+class ApplicationCreate(BaseModel):
+    startup_id: str
+    message: Optional[str] = None
+
+
+class ApplicationOut(BaseModel):
+    id: str
+    startup_id: str
+    student_id: str
+    message: Optional[str]
+    resume_url: Optional[str]
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ApplicationStatusUpdate(BaseModel):
+    status: str  # "accepted" or "rejected"
