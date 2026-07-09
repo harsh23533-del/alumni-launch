@@ -1,4 +1,4 @@
-from typing import Optional
+﻿from typing import Optional
 
 from fastapi import Depends, HTTPException, Query, WebSocket, status
 from fastapi.security import OAuth2PasswordBearer
@@ -67,7 +67,7 @@ def get_current_user_ws(
     token: Optional[str] = Query(default=None),
     db: Session = Depends(get_db),
 ) -> Optional[User]:
-    """Auth for the chat WebSocket — token comes as a query param since browsers
+    """Auth for the chat WebSocket ΓÇö token comes as a query param since browsers
     can't set custom headers on a WebSocket handshake."""
     if not token:
         return None
