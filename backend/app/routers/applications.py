@@ -9,6 +9,7 @@ from app.core.database import get_db
 from app.core.deps import require_alumni, require_student
 from app.models.models import Application, ApplicationStatus, Startup, User
 from app.schemas.schemas import ApplicationOut, ApplicationStatusUpdate
+from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 
@@ -102,4 +103,11 @@ def update_application_status(
     application.status = ApplicationStatus(payload.status)
     db.commit()
     db.refresh(application)
+
+    notify_user(
+        db, application.student.user_id,
+        title=f"Application {application.status.value}",
+        message=f"Your application for {startup.title} was marked as {application.status.value}.",
+        link="/student/applications",
+    )
     return application
