@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -10,14 +12,21 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AlumniLaunch API", version="1.0.0")
 
+# Comma-separated list of allowed frontend origins, e.g. "https://alumni-launch.netlify.app"
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
+origins = ["*"] if allowed_origins == "*" else [o.strip() for o in allowed_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this to your frontend URL in production
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# uploads/resumes isn't tracked by git (empty dirs aren't), so create it
+# on startup or the StaticFiles mount below crashes the app immediately.
+os.makedirs("uploads/resumes", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth.router)
