@@ -128,7 +128,7 @@ def signup_student(payload: StudentSignupRequest, db: Session = Depends(get_db))
         db,
         title="New student signup awaiting approval",
         message=f"{payload.name} ({payload.email}) signed up as a student.",
-        link="/admin/approvals",
+        link="/admin/dashboard",
     )
 
     return SignupPendingResponse(

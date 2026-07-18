@@ -14,6 +14,14 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
+  const loginAdmin = async (email, password) => {
+    // Separate endpoint from the normal /auth/login — only accounts whose
+    // email matches ADMIN_EMAIL on the backend are allowed through.
+    const res = await api.post('/admin/login', { email, password });
+    _persistSession(res.data);
+    return res.data;
+  };
+
   const signupAlumni = async (payload) => {
     const res = await api.post('/auth/signup/alumni', payload);
     _persistSession(res.data);
@@ -52,7 +60,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ token, role, isAdmin, isAuthenticated: !!token, login, signupAlumni, signupStudent, signupCompany, logout }}
+      value={{ token, role, isAdmin, isAuthenticated: !!token, login, loginAdmin, signupAlumni, signupStudent, signupCompany, logout }}
     >
       {children}
     </AuthContext.Provider>
