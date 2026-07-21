@@ -17,7 +17,8 @@ import BrowseJobs from './pages/BrowseJobs';
 import PostJob from './pages/PostJob';
 import JobsDashboard from './pages/JobsDashboard';
 import Chat from './pages/Chat';
-import AdminApprovals from './pages/AdminApprovals';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 export default function App() {
   return (
@@ -55,8 +56,9 @@ export default function App() {
             <ProtectedRoute><Chat /></ProtectedRoute>
           } />
 
-          <Route path="/admin/approvals" element={
-            <ProtectedRoute adminOnly><AdminApprovals /></ProtectedRoute>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>
           } />
         </Routes>
       </AuthProvider>
