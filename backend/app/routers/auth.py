@@ -8,9 +8,8 @@ from app.models.models import (
 )
 from app.schemas.schemas import (
     AlumniSignupRequest, StudentSignupRequest, CompanySignupRequest, LoginRequest,
-    CheckEmailResponse, TokenResponse, SignupPendingResponse,
+    CheckEmailResponse, TokenResponse,
 )
-from app.utils.notify import notify_admin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -96,7 +95,7 @@ def signup_alumni(payload: AlumniSignupRequest, db: Session = Depends(get_db)):
     return TokenResponse(access_token=token, role="alumni", is_admin=is_admin_email(user.email))
 
 
-@router.post("/signup/student", response_model=SignupPendingResponse)
+@router.post("/signup/student", response_model=TokenResponse)
 def signup_student(payload: StudentSignupRequest, db: Session = Depends(get_db)):
     if not is_knit_email(payload.email):
         raise HTTPException(status_code=400, detail="Student signup requires a @knit.ac.in email address.")
@@ -119,22 +118,13 @@ def signup_student(payload: StudentSignupRequest, db: Session = Depends(get_db))
         branch=payload.branch,
         year=payload.year,
         skills=payload.skills,
-        approval_status=StudentApprovalStatus.pending,
+        approval_status=StudentApprovalStatus.approved,
     )
     db.add(profile)
     db.commit()
 
-    notify_admin(
-        db,
-        title="New student signup awaiting approval",
-        message=f"{payload.name} ({payload.email}) signed up as a student.",
-        link="/admin/approvals",
-    )
-
-    return SignupPendingResponse(
-        status="pending",
-        message="Your account has been created and is awaiting admin approval. You'll be notified once approved.",
-    )
+    token = create_access_token({"sub": user.id, "role": "student"})
+    return TokenResponse(access_token=token, role="student", is_admin=is_admin_email(user.email))
 
 
 @router.post("/signup/company", response_model=TokenResponse)
@@ -170,13 +160,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    if user.role == UserRole.student and user.student_profile:
-        status = user.student_profile.approval_status
-        if status == StudentApprovalStatus.pending:
-            raise HTTPException(status_code=403, detail="Your account is still awaiting admin approval.")
-        if status == StudentApprovalStatus.rejected:
-            raise HTTPException(status_code=403, detail="Your signup request was rejected. Contact the admin for details.")
 
     token = create_access_token({"sub": user.id, "role": user.role.value})
     return TokenResponse(access_token=token, role=user.role.value, is_admin=is_admin_email(user.email))

@@ -7,7 +7,6 @@ export default function StudentSignup() {
   const { signupStudent } = useAuth();
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [pending, setPending] = useState(false);
   const [form, setForm] = useState({ email: '', password: '', name: '', branch: '', year: '', skills: '' });
 
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
@@ -18,30 +17,13 @@ export default function StudentSignup() {
     setSubmitting(true);
     try {
       await signupStudent(form);
-      setPending(true);
+      navigate('/startups');
     } catch (err) {
       setError(err.response?.data?.detail || 'Could not create your account. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
-
-  if (pending) {
-    return (
-      <div className="page" style={{ maxWidth: 480, paddingTop: 60 }}>
-        <div className="card" style={{ textAlign: 'center' }}>
-          <h2 style={{ fontSize: 24, marginBottom: 10 }}>Account created 🎉</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: 15 }}>
-            Your signup is awaiting admin approval since you're a student. You'll be able to log in
-            once it's approved — this usually doesn't take long.
-          </p>
-          <Link to="/login" style={{ display: 'inline-block', marginTop: 20, color: 'var(--ink)', fontWeight: 600 }}>
-            Go to login
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="page" style={{ maxWidth: 480, paddingTop: 40 }}>

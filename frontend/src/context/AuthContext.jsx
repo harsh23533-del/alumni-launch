@@ -21,8 +21,8 @@ export function AuthProvider({ children }) {
   };
 
   const signupStudent = async (payload) => {
-    // Student signups go into a pending-approval queue — no session yet.
     const res = await api.post('/auth/signup/student', payload);
+    _persistSession(res.data);
     return res.data;
   };
 
