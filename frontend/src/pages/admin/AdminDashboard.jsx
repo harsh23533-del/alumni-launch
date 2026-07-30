@@ -70,6 +70,32 @@ export default function AdminDashboard() {
     }
   };
 
+  // kind: 'students' | 'alumni' | 'companies' — matches both the /admin/{kind}
+  // URL segment and the setter needed for each list.
+  const setterFor = { students: setStudents, alumni: setAlumni, companies: setCompanies };
+  const statKeyFor = { students: 'total_students', alumni: 'total_alumni', companies: 'total_companies' };
+
+  const deleteRecord = async (kind, id, label) => {
+    const confirmed = window.confirm(
+      `Delete this ${label}? This permanently removes all their related data (applications, ` +
+      `postings, chat messages, notifications) from the database. This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setActioning(id);
+    try {
+      await api.delete(`/admin/${kind}/${id}`);
+      const setList = setterFor[kind];
+      setList((prev) => (prev ? prev.filter((row) => row.id !== id) : prev));
+      const statKey = statKeyFor[kind];
+      setStats((prev) => (prev ? { ...prev, [statKey]: Math.max(0, prev[statKey] - 1) } : prev));
+    } catch (err) {
+      setError(err.response?.data?.detail || `Could not delete this ${label}.`);
+    } finally {
+      setActioning(null);
+    }
+  };
+
   return (
     <div className="page" style={{ paddingTop: 32, maxWidth: 960 }}>
       <h2 style={{ fontSize: 26, marginBottom: 6 }}>Admin dashboard</h2>
@@ -119,12 +145,15 @@ export default function AdminDashboard() {
                   {s.email} {s.branch ? `· ${s.branch}` : ''} {s.year ? `· ${s.year}` : ''} · {s.approval_status}
                 </div>
               </div>
-              {s.approval_status === 'pending' && (
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button className="btn btn-brass" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'approve')}>Approve</button>
-                  <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'reject')}>Reject</button>
-                </div>
-              )}
+              <div style={{ display: 'flex', gap: 10 }}>
+                {s.approval_status === 'pending' && (
+                  <>
+                    <button className="btn btn-brass" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'approve')}>Approve</button>
+                    <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'reject')}>Reject</button>
+                  </>
+                )}
+                <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => deleteRecord('students', s.id, 'student')}>Delete</button>
+              </div>
             </div>
           ))}
         </List>
@@ -140,6 +169,7 @@ export default function AdminDashboard() {
                   {a.email} {a.company ? `· ${a.company}` : ''} {a.batch ? `· Batch ${a.batch}` : ''} · {a.is_claimed ? 'claimed' : 'imported, unclaimed'}
                 </div>
               </div>
+              <button className="btn btn-danger" disabled={actioning === a.id} onClick={() => deleteRecord('alumni', a.id, 'alumnus')}>Delete</button>
             </div>
           ))}
         </List>
@@ -153,6 +183,7 @@ export default function AdminDashboard() {
                 <h3 style={{ fontSize: 16 }}>{c.company_name}</h3>
                 <div style={metaStyle}>{c.industry || 'Industry not set'} {c.website ? `· ${c.website}` : ''}</div>
               </div>
+              <button className="btn btn-danger" disabled={actioning === c.id} onClick={() => deleteRecord('companies', c.id, 'company')}>Delete</button>
             </div>
           ))}
         </List>
@@ -178,54 +209,4 @@ export default function AdminDashboard() {
               <div>
                 <h3 style={{ fontSize: 16 }}>{j.title}</h3>
                 <div style={metaStyle}>
-                  {j.job_type} · {j.location || 'Location not set'} · posted by {j.posted_by_name || 'unknown'} ({j.posted_by_type}) · {j.is_active ? 'active' : 'inactive'}
-                </div>
-              </div>
-            </div>
-          ))}
-        </List>
-      )}
-
-      {tab === 'Applications' && (
-        <>
-          <h3 style={{ fontSize: 16, margin: '4px 0 10px' }}>Startup applications</h3>
-          <List loading={!applications} empty={applications && applications.length === 0} emptyText="None yet.">
-            {applications?.map((a) => (
-              <div key={a.id} className="card" style={rowStyle}>
-                <div style={metaStyle}>Status: {a.status} · Applied {new Date(a.created_at).toLocaleDateString()}</div>
-              </div>
-            ))}
-          </List>
-
-          <h3 style={{ fontSize: 16, margin: '20px 0 10px' }}>Job applications</h3>
-          <List loading={!jobApplications} empty={jobApplications && jobApplications.length === 0} emptyText="None yet.">
-            {jobApplications?.map((a) => (
-              <div key={a.id} className="card" style={rowStyle}>
-                <div style={metaStyle}>Status: {a.status} · Applied {new Date(a.created_at).toLocaleDateString()}</div>
-              </div>
-            ))}
-          </List>
-        </>
-      )}
-    </div>
-  );
-}
-
-function StatCard({ label, value, sub }) {
-  return (
-    <div className="card" style={{ textAlign: 'center', padding: 18 }}>
-      <div style={{ fontSize: 28, fontWeight: 700 }}>{value}</div>
-      <div style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
-}
-
-function List({ loading, empty, emptyText, children }) {
-  if (loading) return <p style={{ color: 'var(--text-dim)' }}>Loading…</p>;
-  if (empty) return <div className="card" style={{ textAlign: 'center', color: 'var(--text-dim)' }}>{emptyText}</div>;
-  return <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>;
-}
-
-const rowStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' };
-const metaStyle = { fontSize: 13.5, color: 'var(--text-dim)', marginTop: 4 };
+                  {j.job_type} · {j.location || 'Location not set'} · posted by {j.posted_by_name || 'unknown'} ({j.posted_by_type}) ·

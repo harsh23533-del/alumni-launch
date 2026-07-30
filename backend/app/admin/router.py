@@ -30,6 +30,8 @@ from app.models.models import (
     Application,
     JobApplication,
     StudentApprovalStatus,
+    ChatMessage,
+    Notification,
 )
 from app.schemas.schemas import (
     LoginRequest,
@@ -47,6 +49,20 @@ from app.admin.schemas import AdminDashboardOut, AdminStudentOut
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+def _purge_user(db: Session, user_id: str):
+    """
+    Delete every row that references this user but is NOT reachable via a
+    profile's own cascade="all, delete-orphan" relationship, then delete the
+    User row itself. Call this AFTER the profile row has already been
+    deleted (or flushed for deletion) so no FK still points at it.
+    """
+    if not user_id:
+        return
+    db.query(ChatMessage).filter(ChatMessage.user_id == user_id).delete(synchronize_session=False)
+    db.query(Notification).filter(Notification.user_id == user_id).delete(synchronize_session=False)
+    db.query(User).filter(User.id == user_id).delete(synchronize_session=False)
 
 
 # ---------- Auth (separate from the normal /auth/login) ----------
@@ -163,6 +179,22 @@ def reject_student(student_id: str, db: Session = Depends(get_db), admin: User =
     return {"status": "rejected"}
 
 
+@router.delete("/students/{student_id}")
+def delete_student(student_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    profile = db.query(StudentProfile).filter(StudentProfile.id == student_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+
+    user_id = profile.user_id
+    # cascade="all, delete-orphan" on StudentProfile.applications/job_applications
+    # takes care of Application + JobApplication rows for this student.
+    db.delete(profile)
+    db.flush()
+    _purge_user(db, user_id)
+    db.commit()
+    return {"status": "deleted"}
+
+
 # ---------- Alumni ----------
 
 @router.get("/alumni", response_model=List[AlumniProfileOut])
@@ -171,12 +203,52 @@ def list_all_alumni(db: Session = Depends(get_db), admin: User = Depends(require
     return rows
 
 
+@router.delete("/alumni/{alumni_id}")
+def delete_alumni(alumni_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    profile = db.query(AlumniProfile).filter(AlumniProfile.id == alumni_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Alumni profile not found")
+
+    user_id = profile.user_id  # may be None if this row was imported and never claimed
+
+    # Jobs posted directly by this alumni aren't reachable via AlumniProfile's
+    # own relationships (only Startup is), so delete them explicitly first —
+    # each Job's own cascade="all, delete-orphan" clears its JobApplications.
+    jobs = db.query(Job).filter(Job.alumni_id == alumni_id).all()
+    for job in jobs:
+        db.delete(job)
+
+    # cascade="all, delete-orphan" on AlumniProfile.startups takes care of
+    # Startup rows and, via Startup.applications, their Applications too.
+    db.delete(profile)
+    db.flush()
+    _purge_user(db, user_id)
+    db.commit()
+    return {"status": "deleted"}
+
+
 # ---------- Companies ----------
 
 @router.get("/companies", response_model=List[CompanyProfileOut])
 def list_all_companies(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     rows = db.query(CompanyProfile).order_by(CompanyProfile.created_at.desc()).all()
     return rows
+
+
+@router.delete("/companies/{company_id}")
+def delete_company(company_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    profile = db.query(CompanyProfile).filter(CompanyProfile.id == company_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Company profile not found")
+
+    user_id = profile.user_id
+    # cascade="all, delete-orphan" on CompanyProfile.jobs takes care of Job
+    # rows and, via Job.applications, their JobApplications too.
+    db.delete(profile)
+    db.flush()
+    _purge_user(db, user_id)
+    db.commit()
+    return {"status": "deleted"}
 
 
 # ---------- Startups ----------
