@@ -17,7 +17,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       const data = await login(form.email, form.password);
-      if (data.is_admin) navigate('/admin/approvals');
+      if (data.is_admin) navigate('/admin/dashboard');
       else if (data.role === 'alumni') navigate('/alumni/dashboard');
       else if (data.role === 'company') navigate('/jobs/dashboard');
       else navigate('/startups');

@@ -54,7 +54,7 @@ export default function Topbar() {
           </>
         )}
         {isAuthenticated && isAdmin && (
-          <button onClick={() => navigate('/admin/approvals')}>Admin approvals</button>
+          <button onClick={() => navigate('/admin/dashboard')}>Admin dashboard</button>
         )}
       </div>
     </div>

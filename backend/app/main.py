@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.database import Base, engine
-from app.routers import auth, import_data, startups, applications, profiles, admin, jobs, notifications, chat
+from app.routers import auth, import_data, startups, applications, profiles, jobs, notifications, chat
+from app.admin import router as admin
 
 # Creates tables if they don't exist yet (fine for dev; use Alembic migrations for production)
 Base.metadata.create_all(bind=engine)
