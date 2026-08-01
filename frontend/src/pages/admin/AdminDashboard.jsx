@@ -15,6 +15,12 @@ export default function AdminDashboard() {
   const [jobApplications, setJobApplications] = useState(null);
   const [error, setError] = useState('');
   const [actioning, setActioning] = useState(null);
+  const [expanded, setExpanded] = useState({}); // `${kind}:${id}` -> bool
+
+  const toggleExpand = (kind, id) => {
+    const key = `${kind}:${id}`;
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   useEffect(() => {
     api.get('/admin/dashboard').then((res) => setStats(res.data)).catch(() => {});
@@ -138,22 +144,42 @@ export default function AdminDashboard() {
       {tab === 'Students' && (
         <List loading={!students} empty={students && students.length === 0} emptyText="No students yet.">
           {students?.map((s) => (
-            <div key={s.id} className="card" style={rowStyle}>
-              <div>
-                <h3 style={{ fontSize: 16 }}>{s.name}</h3>
-                <div style={metaStyle}>
-                  {s.email} {s.branch ? `· ${s.branch}` : ''} {s.year ? `· ${s.year}` : ''} · {s.approval_status}
+            <div key={s.id} className="card" style={{ padding: '14px 16px' }}>
+              <div style={rowStyle}>
+                <div>
+                  <h3 style={{ fontSize: 16 }}>{s.name}</h3>
+                  <div style={metaStyle}>
+                    {s.email} {s.branch ? `· ${s.branch}` : ''} {s.year ? `· ${s.year}` : ''} · {s.approval_status}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {s.approval_status === 'pending' && (
+                    <>
+                      <button className="btn btn-brass" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'approve')}>Approve</button>
+                      <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'reject')}>Reject</button>
+                    </>
+                  )}
+                  <button className="btn btn-ghost" onClick={() => toggleExpand('students', s.id)}>
+                    {expanded[`students:${s.id}`] ? 'Hide details' : 'View details'}
+                  </button>
+                  <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => deleteRecord('students', s.id, 'student')}>Delete</button>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                {s.approval_status === 'pending' && (
-                  <>
-                    <button className="btn btn-brass" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'approve')}>Approve</button>
-                    <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => actOnStudent(s.id, 'reject')}>Reject</button>
-                  </>
-                )}
-                <button className="btn btn-danger" disabled={actioning === s.id} onClick={() => deleteRecord('students', s.id, 'student')}>Delete</button>
-              </div>
+              {expanded[`students:${s.id}`] && (
+                <div style={detailPanelStyle}>
+                  <DetailRow label="Full name" value={s.name} />
+                  <DetailRow label="Email" value={s.email} />
+                  <DetailRow label="Branch" value={s.branch} />
+                  <DetailRow label="Year" value={s.year} />
+                  <DetailRow label="Skills" value={s.skills} />
+                  <DetailRow
+                    label="Resume"
+                    value={s.resume_url ? <a href={s.resume_url} target="_blank" rel="noreferrer">Open resume</a> : null}
+                  />
+                  <DetailRow label="Approval status" value={s.approval_status} />
+                  <DetailRow label="Signed up" value={new Date(s.created_at).toLocaleString()} />
+                </div>
+              )}
             </div>
           ))}
         </List>
@@ -162,14 +188,38 @@ export default function AdminDashboard() {
       {tab === 'Alumni' && (
         <List loading={!alumni} empty={alumni && alumni.length === 0} emptyText="No alumni yet.">
           {alumni?.map((a) => (
-            <div key={a.id} className="card" style={rowStyle}>
-              <div>
-                <h3 style={{ fontSize: 16 }}>{a.name || 'Unnamed'}</h3>
-                <div style={metaStyle}>
-                  {a.email} {a.company ? `· ${a.company}` : ''} {a.batch ? `· Batch ${a.batch}` : ''} · {a.is_claimed ? 'claimed' : 'imported, unclaimed'}
+            <div key={a.id} className="card" style={{ padding: '14px 16px' }}>
+              <div style={rowStyle}>
+                <div>
+                  <h3 style={{ fontSize: 16 }}>{a.name || 'Unnamed'}</h3>
+                  <div style={metaStyle}>
+                    {a.email} {a.company ? `· ${a.company}` : ''} {a.batch ? `· Batch ${a.batch}` : ''} · {a.is_claimed ? 'claimed' : 'imported, unclaimed'}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button className="btn btn-ghost" onClick={() => toggleExpand('alumni', a.id)}>
+                    {expanded[`alumni:${a.id}`] ? 'Hide details' : 'View details'}
+                  </button>
+                  <button className="btn btn-danger" disabled={actioning === a.id} onClick={() => deleteRecord('alumni', a.id, 'alumnus')}>Delete</button>
                 </div>
               </div>
-              <button className="btn btn-danger" disabled={actioning === a.id} onClick={() => deleteRecord('alumni', a.id, 'alumnus')}>Delete</button>
+              {expanded[`alumni:${a.id}`] && (
+                <div style={detailPanelStyle}>
+                  <DetailRow label="Name" value={a.name} />
+                  <DetailRow label="Email" value={a.email} />
+                  <DetailRow label="Batch" value={a.batch} />
+                  <DetailRow label="Branch" value={a.branch} />
+                  <DetailRow label="Current company" value={a.company} />
+                  <DetailRow label="Designation" value={a.designation} />
+                  <DetailRow label="Phone" value={a.phone} />
+                  <DetailRow
+                    label="LinkedIn"
+                    value={a.linkedin_url ? <a href={a.linkedin_url} target="_blank" rel="noreferrer">{a.linkedin_url}</a> : null}
+                  />
+                  <DetailRow label="Account status" value={a.is_claimed ? 'Claimed (has logged in)' : 'Imported, never claimed'} />
+                  <DetailRow label="Joined" value={new Date(a.created_at).toLocaleString()} />
+                </div>
+              )}
             </div>
           ))}
         </List>
@@ -178,12 +228,29 @@ export default function AdminDashboard() {
       {tab === 'Companies' && (
         <List loading={!companies} empty={companies && companies.length === 0} emptyText="No companies yet.">
           {companies?.map((c) => (
-            <div key={c.id} className="card" style={rowStyle}>
-              <div>
-                <h3 style={{ fontSize: 16 }}>{c.company_name}</h3>
-                <div style={metaStyle}>{c.industry || 'Industry not set'} {c.website ? `· ${c.website}` : ''}</div>
+            <div key={c.id} className="card" style={{ padding: '14px 16px' }}>
+              <div style={rowStyle}>
+                <div>
+                  <h3 style={{ fontSize: 16 }}>{c.company_name}</h3>
+                  <div style={metaStyle}>{c.industry || 'Industry not set'} {c.website ? `· ${c.website}` : ''}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button className="btn btn-ghost" onClick={() => toggleExpand('companies', c.id)}>
+                    {expanded[`companies:${c.id}`] ? 'Hide details' : 'View details'}
+                  </button>
+                  <button className="btn btn-danger" disabled={actioning === c.id} onClick={() => deleteRecord('companies', c.id, 'company')}>Delete</button>
+                </div>
               </div>
-              <button className="btn btn-danger" disabled={actioning === c.id} onClick={() => deleteRecord('companies', c.id, 'company')}>Delete</button>
+              {expanded[`companies:${c.id}`] && (
+                <div style={detailPanelStyle}>
+                  <DetailRow label="Company name" value={c.company_name} />
+                  <DetailRow label="Contact email" value={c.email} />
+                  <DetailRow label="Website" value={c.website} />
+                  <DetailRow label="Industry" value={c.industry} />
+                  <DetailRow label="Description" value={c.description} />
+                  <DetailRow label="Joined" value={new Date(c.created_at).toLocaleString()} />
+                </div>
+              )}
             </div>
           ))}
         </List>
@@ -192,11 +259,25 @@ export default function AdminDashboard() {
       {tab === 'Startups' && (
         <List loading={!startups} empty={startups && startups.length === 0} emptyText="No startups posted yet.">
           {startups?.map((s) => (
-            <div key={s.id} className="card" style={rowStyle}>
-              <div>
-                <h3 style={{ fontSize: 16 }}>{s.title}</h3>
-                <div style={metaStyle}>{s.domain || 'Domain not set'} · {s.stage || 'Stage not set'} · {s.is_active ? 'active' : 'inactive'}</div>
+            <div key={s.id} className="card" style={{ padding: '14px 16px' }}>
+              <div style={rowStyle}>
+                <div>
+                  <h3 style={{ fontSize: 16 }}>{s.title}</h3>
+                  <div style={metaStyle}>{s.domain || 'Domain not set'} · {s.stage || 'Stage not set'} · {s.is_active ? 'active' : 'inactive'}</div>
+                </div>
+                <button className="btn btn-ghost" onClick={() => toggleExpand('startups', s.id)}>
+                  {expanded[`startups:${s.id}`] ? 'Hide details' : 'View details'}
+                </button>
               </div>
+              {expanded[`startups:${s.id}`] && (
+                <div style={detailPanelStyle}>
+                  <DetailRow label="Title" value={s.title} />
+                  <DetailRow label="Domain" value={s.domain} />
+                  <DetailRow label="Stage" value={s.stage} />
+                  <DetailRow label="Description" value={s.description} />
+                  <DetailRow label="Status" value={s.is_active ? 'Active' : 'Inactive'} />
+                </div>
+              )}
             </div>
           ))}
         </List>
@@ -205,8 +286,148 @@ export default function AdminDashboard() {
       {tab === 'Jobs' && (
         <List loading={!jobs} empty={jobs && jobs.length === 0} emptyText="No jobs posted yet.">
           {jobs?.map((j) => (
-            <div key={j.id} className="card" style={rowStyle}>
-              <div>
-                <h3 style={{ fontSize: 16 }}>{j.title}</h3>
-                <div style={metaStyle}>
-                  {j.job_type} · {j.location || 'Location not set'} · posted by {j.posted_by_name || 'unknown'} ({j.posted_by_type}) ·
+            <div key={j.id} className="card" style={{ padding: '14px 16px' }}>
+              <div style={rowStyle}>
+                <div>
+                  <h3 style={{ fontSize: 16 }}>{j.title}</h3>
+                  <div style={metaStyle}>
+                    {j.job_type} · {j.location || 'Location not set'} · posted by {j.posted_by_name || 'unknown'} ({j.posted_by_type}) · {j.is_active ? 'active' : 'inactive'}
+                  </div>
+                </div>
+                <button className="btn btn-ghost" onClick={() => toggleExpand('jobs', j.id)}>
+                  {expanded[`jobs:${j.id}`] ? 'Hide details' : 'View details'}
+                </button>
+              </div>
+              {expanded[`jobs:${j.id}`] && (
+                <div style={detailPanelStyle}>
+                  <DetailRow label="Title" value={j.title} />
+                  <DetailRow label="Type" value={j.job_type} />
+                  <DetailRow label="Location" value={j.location} />
+                  <DetailRow label="Description" value={j.description} />
+                  <DetailRow label="Skills required" value={j.skills_required} />
+                  <DetailRow label="Stipend / salary" value={j.stipend_or_salary} />
+                  <DetailRow
+                    label="Apply link"
+                    value={j.apply_link ? <a href={j.apply_link} target="_blank" rel="noreferrer">{j.apply_link}</a> : null}
+                  />
+                  <DetailRow label="Posted by" value={j.posted_by_name ? `${j.posted_by_name} (${j.posted_by_type})` : null} />
+                  <DetailRow label="Posted on" value={new Date(j.created_at).toLocaleString()} />
+                </div>
+              )}
+            </div>
+          ))}
+        </List>
+      )}
+
+      {tab === 'Applications' && (
+        <>
+          <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>Startup applications</h3>
+          <List loading={!applications} empty={applications && applications.length === 0} emptyText="No startup applications yet.">
+            {applications?.map((a) => (
+              <div key={a.id} className="card" style={{ padding: '14px 16px' }}>
+                <div style={rowStyle}>
+                  <div>
+                    <h3 style={{ fontSize: 15 }}>Application · {a.status}</h3>
+                    <div style={metaStyle}>{a.message ? a.message.slice(0, 80) : 'No message'}</div>
+                  </div>
+                  <button className="btn btn-ghost" onClick={() => toggleExpand('applications', a.id)}>
+                    {expanded[`applications:${a.id}`] ? 'Hide details' : 'View details'}
+                  </button>
+                </div>
+                {expanded[`applications:${a.id}`] && (
+                  <div style={detailPanelStyle}>
+                    <DetailRow label="Status" value={a.status} />
+                    <DetailRow label="Message" value={a.message} />
+                    <DetailRow
+                      label="Resume"
+                      value={a.resume_url ? <a href={a.resume_url} target="_blank" rel="noreferrer">Open resume</a> : null}
+                    />
+                    <DetailRow label="Applied on" value={new Date(a.created_at).toLocaleString()} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </List>
+
+          <h3 style={{ fontSize: 15, margin: '20px 0 10px', color: 'var(--text-dim)' }}>Job applications</h3>
+          <List loading={!jobApplications} empty={jobApplications && jobApplications.length === 0} emptyText="No job applications yet.">
+            {jobApplications?.map((a) => (
+              <div key={a.id} className="card" style={{ padding: '14px 16px' }}>
+                <div style={rowStyle}>
+                  <div>
+                    <h3 style={{ fontSize: 15 }}>Application · {a.status}</h3>
+                    <div style={metaStyle}>{a.message ? a.message.slice(0, 80) : 'No message'}</div>
+                  </div>
+                  <button className="btn btn-ghost" onClick={() => toggleExpand('job-applications', a.id)}>
+                    {expanded[`job-applications:${a.id}`] ? 'Hide details' : 'View details'}
+                  </button>
+                </div>
+                {expanded[`job-applications:${a.id}`] && (
+                  <div style={detailPanelStyle}>
+                    <DetailRow label="Status" value={a.status} />
+                    <DetailRow label="Message" value={a.message} />
+                    <DetailRow
+                      label="Resume"
+                      value={a.resume_url ? <a href={a.resume_url} target="_blank" rel="noreferrer">Open resume</a> : null}
+                    />
+                    <DetailRow label="Applied on" value={new Date(a.created_at).toLocaleString()} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </List>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ---------- Shared styles & small helper components ----------
+
+const rowStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 12,
+  flexWrap: 'wrap',
+};
+
+const metaStyle = {
+  color: 'var(--text-dim)',
+  fontSize: 13,
+  marginTop: 4,
+};
+
+const detailPanelStyle = {
+  marginTop: 12,
+  paddingTop: 12,
+  borderTop: '1px solid var(--border, rgba(255,255,255,0.1))',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+  gap: '6px 20px',
+};
+
+function DetailRow({ label, value }) {
+  return (
+    <div style={{ fontSize: 13.5 }}>
+      <span style={{ color: 'var(--text-dim)' }}>{label}: </span>
+      <span>{value || value === 0 ? value : '—'}</span>
+    </div>
+  );
+}
+
+function List({ loading, empty, emptyText, children }) {
+  if (loading) return <p style={{ color: 'var(--text-dim)' }}>Loading…</p>;
+  if (empty) return <p style={{ color: 'var(--text-dim)' }}>{emptyText}</p>;
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>;
+}
+
+function StatCard({ label, value, sub }) {
+  return (
+    <div className="card" style={{ padding: '16px 18px' }}>
+      <div style={{ fontSize: 12.5, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{label}</div>
+      <div style={{ fontSize: 28, fontWeight: 600, margin: '4px 0' }}>{value}</div>
+      {sub && <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>{sub}</div>}
+    </div>
+  );
+}

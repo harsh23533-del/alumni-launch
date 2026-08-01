@@ -38,14 +38,12 @@ from app.schemas.schemas import (
     TokenResponse,
     PendingStudentOut,
     StudentProfileOut,
-    AlumniProfileOut,
-    CompanyProfileOut,
     StartupOut,
     JobOut,
     ApplicationOut,
     JobApplicationOut,
 )
-from app.admin.schemas import AdminDashboardOut, AdminStudentOut
+from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -113,6 +111,7 @@ def list_all_students(db: Session = Depends(get_db), admin: User = Depends(requi
             branch=r.branch,
             year=r.year,
             skills=r.skills,
+            resume_url=r.resume_url,
             approval_status=r.approval_status.value,
             created_at=r.created_at,
         )
@@ -197,10 +196,29 @@ def delete_student(student_id: str, db: Session = Depends(get_db), admin: User =
 
 # ---------- Alumni ----------
 
-@router.get("/alumni", response_model=List[AlumniProfileOut])
+@router.get("/alumni", response_model=List[AdminAlumniOut])
 def list_all_alumni(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     rows = db.query(AlumniProfile).order_by(AlumniProfile.created_at.desc()).all()
-    return rows
+    return [
+        AdminAlumniOut(
+            id=r.id,
+            user_id=r.user_id,
+            # r.email is the address used for signup-matching; if the row was
+            # later claimed, r.user.email is the account's actual login email.
+            email=(r.user.email if r.user else r.email),
+            name=r.name,
+            batch=r.batch,
+            branch=r.branch,
+            company=r.company,
+            designation=r.designation,
+            linkedin_url=r.linkedin_url,
+            phone=r.phone,
+            is_claimed=r.is_claimed,
+            imported=r.imported,
+            created_at=r.created_at,
+        )
+        for r in rows
+    ]
 
 
 @router.delete("/alumni/{alumni_id}")
@@ -229,10 +247,22 @@ def delete_alumni(alumni_id: str, db: Session = Depends(get_db), admin: User = D
 
 # ---------- Companies ----------
 
-@router.get("/companies", response_model=List[CompanyProfileOut])
+@router.get("/companies", response_model=List[AdminCompanyOut])
 def list_all_companies(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     rows = db.query(CompanyProfile).order_by(CompanyProfile.created_at.desc()).all()
-    return rows
+    return [
+        AdminCompanyOut(
+            id=r.id,
+            user_id=r.user_id,
+            email=r.user.email,
+            company_name=r.company_name,
+            website=r.website,
+            industry=r.industry,
+            description=r.description,
+            created_at=r.created_at,
+        )
+        for r in rows
+    ]
 
 
 @router.delete("/companies/{company_id}")
