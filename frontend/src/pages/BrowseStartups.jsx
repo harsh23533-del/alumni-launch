@@ -58,6 +58,15 @@ export default function BrowseStartups() {
 
   return (
     <div className="page" style={{ paddingTop: 32 }}>
+      <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 28, border: '1px solid var(--line)' }}>
+        <img
+          src="/images/startups-banner.webp"
+          alt=""
+          aria-hidden="true"
+          style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
+        />
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <h2 style={{ fontSize: 26 }}>Open startups</h2>
         <input
