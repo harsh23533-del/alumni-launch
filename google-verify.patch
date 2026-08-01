@@ -1,0 +1,12 @@
+diff --git a/frontend/index.html b/frontend/index.html
+index baa696d..0c03389 100644
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -7,6 +7,7 @@
+     <title>AlumniLaunch — Connect Students, Alumni & Companies</title>
+     <meta name="description" content="AlumniLaunch connects students with alumni-led startups and company job postings. Browse startups, apply to jobs, and build your career network." />
+     <meta name="robots" content="index, follow" />
++    <meta name="google-site-verification" content="VqRbN3n7cg6sMvK2gU__F2xGQpE8XMQy9E-un40DKoQ" />
+ 
+     <meta property="og:type" content="website" />
+     <meta property="og:title" content="AlumniLaunch — Connect Students, Alumni & Companies" />
