@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Landing() {
   const navigate = useNavigate();
+  usePageTitle('Home', 'Where alumni startups find their first hires. Browse startups and jobs posted by alumni and companies, and apply directly with your resume.');
 
   return (
     <div className="page">

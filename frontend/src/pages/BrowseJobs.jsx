@@ -3,8 +3,10 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '../components/JobCard';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function BrowseJobs() {
+  usePageTitle('Browse Jobs', 'Find internships and jobs posted by alumni and companies. Apply directly with your resume.');
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);

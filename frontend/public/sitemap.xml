@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://alumni-launch-3.onrender.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://alumni-launch-3.onrender.com/startups</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://alumni-launch-3.onrender.com/jobs</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://alumni-launch-3.onrender.com/signup</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://alumni-launch-3.onrender.com/login</loc>
+    <priority>0.3</priority>
+  </url>
+</urlset>

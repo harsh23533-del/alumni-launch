@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function SignupChoice() {
+  usePageTitle('Sign Up', 'Join AlumniLaunch as an alumnus, student, or company.');
   const navigate = useNavigate();
 
   return (

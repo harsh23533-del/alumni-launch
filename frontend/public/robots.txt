@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /alumni/dashboard
+Disallow: /alumni/post
+Disallow: /jobs/post
+Disallow: /jobs/dashboard
+Disallow: /student/applications
+Disallow: /chat
+
+Sitemap: https://alumni-launch-3.onrender.com/sitemap.xml

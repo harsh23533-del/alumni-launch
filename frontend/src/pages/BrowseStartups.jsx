@@ -3,8 +3,10 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import StartupCard from '../components/StartupCard';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function BrowseStartups() {
+  usePageTitle('Browse Startups', 'Explore startups posted by alumni. Find opportunities to join early-stage teams and gain real-world experience.');
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
   const [startups, setStartups] = useState([]);
