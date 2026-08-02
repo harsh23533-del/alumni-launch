@@ -67,8 +67,8 @@ export default function NotificationBell() {
         🔔
         {unreadCount > 0 && (
           <span style={{
-            position: 'absolute', top: 2, right: 2, background: 'var(--coral, #E76F51)',
-            color: '#fff', fontSize: 10, fontWeight: 700, borderRadius: '50%',
+            position: 'absolute', top: 2, right: 2, background: 'var(--coral, #FF6F5E)',
+            color: '#0A0E14', fontSize: 10, fontWeight: 700, borderRadius: '50%',
             minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '0 3px',
           }}>
@@ -80,7 +80,7 @@ export default function NotificationBell() {
       {open && (
         <div style={{
           position: 'absolute', right: 0, top: '110%', width: 'min(320px, calc(100vw - 32px))', maxHeight: 400, overflowY: 'auto',
-          background: 'var(--paper-raised, #fff)', border: '1px solid var(--line)', borderRadius: 10,
+          background: 'var(--paper-raised, #0F1720)', border: '1px solid var(--line)', borderRadius: 10,
           boxShadow: 'var(--shadow-card)', zIndex: 100,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid var(--line)' }}>
