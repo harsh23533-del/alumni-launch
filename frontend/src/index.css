@@ -66,6 +66,20 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   padding: 0 24px 80px;
 }
 
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 480px) {
+  .page { padding-left: 16px; padding-right: 16px; }
+  .card { padding: 20px; }
+  .topbar { padding: 16px; }
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -210,6 +224,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .row-2 { grid-template-columns: 1fr; }
 }
 
+.signup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 800px) {
+  .signup-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 520px) {
+  .signup-grid { grid-template-columns: 1fr; }
+}
+
 .helper-text { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
 
 .error-banner {
@@ -267,3 +294,82 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .seal-pending { background: rgba(231, 111, 81, 0.12); color: var(--coral); }
 .seal-accepted { background: rgba(42, 157, 143, 0.12); color: var(--teal); }
 .seal-rejected { background: rgba(91, 100, 120, 0.14); color: var(--text-dim); }
+
+/* Mobile bottom navigation */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body { padding-bottom: 64px; }
+
+  .topbar .nav-links { display: none; }
+
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--paper-raised);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 16px rgba(22, 33, 62, 0.08);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: color 0.16s ease, background-color 0.16s ease;
+  }
+
+  .mobile-nav-item:hover { color: var(--ink); }
+
+  .mobile-nav-item-active {
+    color: var(--ink);
+    background: rgba(201, 151, 44, 0.12);
+  }
+
+  .mobile-nav-item-active .mobile-nav-icon {
+    color: var(--brass);
+  }
+
+  .mobile-nav-icon {
+    position: relative;
+    display: flex;
+  }
+
+  .mobile-nav-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .mobile-nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background: var(--coral);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 50%;
+    min-width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+}

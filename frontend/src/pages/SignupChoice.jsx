@@ -13,7 +13,7 @@ export default function SignupChoice() {
   return (
     <div className="page" style={{ maxWidth: 900, paddingTop: 60 }}>
       <h2 style={{ fontSize: 28, marginBottom: 24, textAlign: 'center' }}>Who are you signing up as?</h2>
-      <div className="row-2" style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+      <div className="signup-grid" style={{ gap: 20 }}>
         {options.map((opt, i) => (
           <TiltCard
             as="button"

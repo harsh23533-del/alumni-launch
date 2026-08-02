@@ -10,7 +10,7 @@ export default function Landing() {
       <div
         style={{
           position: 'relative',
-          padding: '96px 24px 64px',
+          padding: 'clamp(56px, 14vw, 96px) 20px clamp(40px, 10vw, 64px)',
           textAlign: 'center',
           overflow: 'hidden',
           color: 'var(--paper)',
@@ -77,21 +77,21 @@ export default function Landing() {
           <div className="rise-in rise-in-1" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--brass-soft)', marginBottom: 14 }}>
             For alumni & students
           </div>
-          <h1 className="rise-in rise-in-2" style={{ fontSize: 48, lineHeight: 1.15, maxWidth: 680, margin: '0 auto', color: 'var(--paper)' }}>
+          <h1 className="rise-in rise-in-2" style={{ fontSize: 'clamp(28px, 7vw, 48px)', lineHeight: 1.15, maxWidth: 680, margin: '0 auto', color: 'var(--paper)' }}>
             Where alumni startups find their first hires.
           </h1>
-          <p className="rise-in rise-in-2" style={{ fontSize: 17, color: 'rgba(246,247,251,0.78)', maxWidth: 520, margin: '20px auto 0', lineHeight: 1.6 }}>
+          <p className="rise-in rise-in-2" style={{ fontSize: 'clamp(14.5px, 3.5vw, 17px)', color: 'rgba(246,247,251,0.78)', maxWidth: 520, margin: '20px auto 0', lineHeight: 1.6 }}>
             Alumni post the startup they're building and who they need.
             Students apply directly with a resume. No middle steps.
           </p>
 
           <div className="rise-in rise-in-3" style={{ display: 'flex', gap: 14, justifyContent: 'center', marginTop: 32, flexWrap: 'wrap' }}>
-            <button className="btn btn-brass" style={{ padding: '13px 26px', fontSize: 15.5 }} onClick={() => navigate('/signup/alumni')}>
+            <button className="btn btn-brass" style={{ padding: '13px 22px', fontSize: 15 }} onClick={() => navigate('/signup/alumni')}>
               I'm an alumnus — post a startup
             </button>
             <button
               className="btn"
-              style={{ padding: '13px 26px', fontSize: 15.5, background: 'rgba(255,255,255,0.08)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.35)' }}
+              style={{ padding: '13px 22px', fontSize: 15, background: 'rgba(255,255,255,0.08)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.35)' }}
               onClick={() => navigate('/signup/student')}
             >
               I'm a student — find a role

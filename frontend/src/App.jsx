@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Topbar from './components/Topbar';
+import MobileBottomNav from './components/MobileBottomNav';
 
 import Landing from './pages/Landing';
 import SignupChoice from './pages/SignupChoice';
@@ -61,6 +62,7 @@ export default function App() {
             <ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>
           } />
         </Routes>
+        <MobileBottomNav />
       </AuthProvider>
     </BrowserRouter>
   );

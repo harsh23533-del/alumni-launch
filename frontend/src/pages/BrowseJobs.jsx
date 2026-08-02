@@ -65,7 +65,7 @@ export default function BrowseJobs() {
           src="/images/jobs-banner.webp"
           alt=""
           aria-hidden="true"
-          style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
+          style={{ width: '100%', height: 'clamp(120px, 30vw, 220px)', objectFit: 'cover', display: 'block' }}
         />
       </div>
 

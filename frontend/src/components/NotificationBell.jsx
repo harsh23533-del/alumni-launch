@@ -79,7 +79,7 @@ export default function NotificationBell() {
 
       {open && (
         <div style={{
-          position: 'absolute', right: 0, top: '110%', width: 320, maxHeight: 400, overflowY: 'auto',
+          position: 'absolute', right: 0, top: '110%', width: 'min(320px, calc(100vw - 32px))', maxHeight: 400, overflowY: 'auto',
           background: 'var(--paper-raised, #fff)', border: '1px solid var(--line)', borderRadius: 10,
           boxShadow: 'var(--shadow-card)', zIndex: 100,
         }}>
