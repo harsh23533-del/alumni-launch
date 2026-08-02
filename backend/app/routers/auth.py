@@ -2,16 +2,30 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.core.security import hash_password, verify_password, create_access_token, is_knit_email, is_admin_email
 from app.models.models import (
     User, AlumniProfile, StudentProfile, CompanyProfile, UserRole, StudentApprovalStatus,
 )
 from app.schemas.schemas import (
     AlumniSignupRequest, StudentSignupRequest, CompanySignupRequest, LoginRequest,
-    CheckEmailResponse, TokenResponse,
+    CheckEmailResponse, TokenResponse, MeOut,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.get("/me", response_model=MeOut)
+def get_me(user: User = Depends(get_current_user)):
+    if user.role == "alumni" and user.alumni_profile:
+        name = user.alumni_profile.name or user.email
+    elif user.role == "student" and user.student_profile:
+        name = user.student_profile.name or user.email
+    elif user.role == "company" and user.company_profile:
+        name = user.company_profile.company_name or user.email
+    else:
+        name = user.email
+    return MeOut(id=user.id, email=user.email, role=user.role.value, name=name, is_admin=is_admin_email(user.email))
 
 
 @router.get("/check-alumni-email", response_model=CheckEmailResponse)

@@ -17,6 +17,7 @@ export default function Topbar() {
           <>
             <button onClick={() => navigate('/startups')}>Browse startups</button>
             <button onClick={() => navigate('/jobs')}>Jobs</button>
+            <button onClick={() => navigate('/ideas')}>Ideas</button>
             <button onClick={() => navigate('/login')}>Log in</button>
             <button className="btn btn-primary" onClick={() => navigate('/signup')}>
               Sign up
@@ -29,6 +30,8 @@ export default function Topbar() {
             <button onClick={() => navigate('/alumni/post')}>Post a startup</button>
             <button onClick={() => navigate('/jobs/dashboard')}>My jobs</button>
             <button onClick={() => navigate('/jobs/post')}>Post a job</button>
+            <button onClick={() => navigate('/ideas')}>Ideas</button>
+            <button onClick={() => navigate('/messages')}>Messages</button>
             <button onClick={() => navigate('/chat')}>Chat</button>
             <NotificationBell />
             <button onClick={() => { logout(); navigate('/'); }}>Log out</button>
@@ -39,6 +42,8 @@ export default function Topbar() {
             <button onClick={() => navigate('/startups')}>Browse startups</button>
             <button onClick={() => navigate('/jobs')}>Jobs</button>
             <button onClick={() => navigate('/student/applications')}>My applications</button>
+            <button onClick={() => navigate('/ideas')}>Ideas</button>
+            <button onClick={() => navigate('/messages')}>Messages</button>
             <button onClick={() => navigate('/chat')}>Chat</button>
             <NotificationBell />
             <button onClick={() => { logout(); navigate('/'); }}>Log out</button>
@@ -48,6 +53,8 @@ export default function Topbar() {
           <>
             <button onClick={() => navigate('/jobs/dashboard')}>My jobs</button>
             <button onClick={() => navigate('/jobs/post')}>Post a job</button>
+            <button onClick={() => navigate('/ideas')}>Ideas</button>
+            <button onClick={() => navigate('/messages')}>Messages</button>
             <button onClick={() => navigate('/chat')}>Chat</button>
             <NotificationBell />
             <button onClick={() => { logout(); navigate('/'); }}>Log out</button>

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.database import Base, engine
-from app.routers import auth, import_data, startups, applications, profiles, jobs, notifications, chat
+from app.routers import auth, import_data, startups, applications, profiles, jobs, notifications, chat, ideas, messages
 from app.admin import router as admin
 
 # Creates tables if they don't exist yet (fine for dev; use Alembic migrations for production)
@@ -28,6 +28,9 @@ app.add_middleware(
 # uploads/resumes isn't tracked by git (empty dirs aren't), so create it
 # on startup or the StaticFiles mount below crashes the app immediately.
 os.makedirs("uploads/resumes", exist_ok=True)
+os.makedirs("uploads/idea_posters", exist_ok=True)
+os.makedirs("uploads/idea_documents", exist_ok=True)
+os.makedirs("uploads/idea_voice_notes", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth.router)
@@ -39,6 +42,8 @@ app.include_router(admin.router)
 app.include_router(jobs.router)
 app.include_router(notifications.router)
 app.include_router(chat.router)
+app.include_router(ideas.router)
+app.include_router(messages.router)
 
 
 @app.get("/")

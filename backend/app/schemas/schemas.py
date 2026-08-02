@@ -59,6 +59,14 @@ class SignupPendingResponse(BaseModel):
     message: str
 
 
+class MeOut(BaseModel):
+    id: str
+    email: str
+    role: str
+    name: str
+    is_admin: bool = False
+
+
 # ---------- Profiles ----------
 
 class AlumniProfileOut(BaseModel):
@@ -249,3 +257,76 @@ class ApplicationOut(BaseModel):
 
 class ApplicationStatusUpdate(BaseModel):
     status: str  # "accepted" or "rejected"
+
+
+# ---------- Ideas ----------
+
+class IdeaOut(BaseModel):
+    id: str
+    student_id: str
+    title: str
+    description: Optional[str]
+    requirement: Optional[str]
+    poster_url: Optional[str]
+    document_url: Optional[str]
+    voice_note_url: Optional[str]
+    is_active: bool
+    created_at: datetime
+    student_name: Optional[str] = None
+    student_user_id: Optional[str] = None
+    avg_rating: float = 0
+    ratings_count: int = 0
+    my_rating: Optional[int] = None  # the current viewer's own rating, if any
+
+    class Config:
+        from_attributes = True
+
+
+class IdeaRatingCreate(BaseModel):
+    stars: int  # 1-5
+    comment: Optional[str] = None
+
+
+class IdeaRatingOut(BaseModel):
+    id: str
+    idea_id: str
+    rater_id: str
+    stars: int
+    comment: Optional[str]
+    created_at: datetime
+    rater_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ---------- Direct messages ----------
+
+class DirectMessageCreate(BaseModel):
+    receiver_id: str
+    idea_id: Optional[str] = None
+    content: str
+
+
+class DirectMessageOut(BaseModel):
+    id: str
+    sender_id: str
+    receiver_id: str
+    idea_id: Optional[str]
+    content: str
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationOut(BaseModel):
+    other_user_id: str
+    other_user_name: str
+    other_user_role: str
+    idea_id: Optional[str] = None
+    idea_title: Optional[str] = None
+    last_message: str
+    last_message_at: datetime
+    unread_count: int = 0

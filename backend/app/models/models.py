@@ -199,6 +199,62 @@ class JobApplication(Base):
     student = relationship("StudentProfile", back_populates="job_applications")
 
 
+class Idea(Base):
+    """A student's startup/project idea — pitched with text, an optional poster,
+    an optional document, and an optional voice note recording."""
+    __tablename__ = "ideas"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    student_id = Column(UUID(as_uuid=False), ForeignKey("student_profiles.id"), nullable=False)
+
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    requirement = Column(Text, nullable=True)  # what the student needs (funding, mentor, team...)
+    poster_url = Column(String, nullable=True)
+    document_url = Column(String, nullable=True)
+    voice_note_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    student = relationship("StudentProfile")
+    ratings = relationship("IdeaRating", back_populates="idea", cascade="all, delete-orphan")
+
+
+class IdeaRating(Base):
+    """One rating per (idea, rater) — only alumni/company accounts can rate."""
+    __tablename__ = "idea_ratings"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    idea_id = Column(UUID(as_uuid=False), ForeignKey("ideas.id"), nullable=False)
+    rater_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+
+    stars = Column(Integer, nullable=False)  # 1-5
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    idea = relationship("Idea", back_populates="ratings")
+    rater = relationship("User")
+
+
+class DirectMessage(Base):
+    """Private 1:1 messages — e.g. an alumni or student messaging an idea's
+    author. Only visible to the two people in the conversation."""
+    __tablename__ = "direct_messages"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    sender_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    receiver_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    idea_id = Column(UUID(as_uuid=False), ForeignKey("ideas.id"), nullable=True)  # context, if any
+
+    content = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])
+    idea = relationship("Idea")
+
+
 class ChatMessage(Base):
     """Simple global public chat room — every logged-in user can post/read here."""
     __tablename__ = "chat_messages"

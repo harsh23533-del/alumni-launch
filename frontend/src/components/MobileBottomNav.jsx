@@ -35,6 +35,16 @@ const icons = {
       <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
     </svg>
   ),
+  idea: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.4 1 1.2 1 2.3h6c0-1.1.4-1.9 1-2.3A7 7 0 0 0 12 2z" />
+    </svg>
+  ),
+  mail: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" />
+    </svg>
+  ),
 };
 
 function buildTabs({ isAuthenticated, role, isAdmin }) {
@@ -42,7 +52,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'startups', label: 'Startups', icon: 'browse', path: '/startups' },
-      { id: 'jobs', label: 'Jobs', icon: 'post', path: '/jobs' },
+      { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
       { id: 'login', label: 'Log in', icon: 'profile', path: '/login' },
     ];
   }
@@ -57,6 +67,8 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'dashboard', label: 'My startups', icon: 'browse', path: '/alumni/dashboard' },
       { id: 'post', label: 'Post', icon: 'post', path: '/alumni/post' },
+      { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+      { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
     ];
   }
@@ -64,7 +76,9 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'jobs', label: 'Jobs', icon: 'browse', path: '/jobs' },
+      { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
       { id: 'applications', label: 'Applied', icon: 'post', path: '/student/applications' },
+      { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
     ];
   }
@@ -73,6 +87,8 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     { id: 'home', label: 'Home', icon: 'home', path: '/' },
     { id: 'dashboard', label: 'My jobs', icon: 'browse', path: '/jobs/dashboard' },
     { id: 'post', label: 'Post', icon: 'post', path: '/jobs/post' },
+    { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+    { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
     { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
   ];
 }

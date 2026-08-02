@@ -56,6 +56,13 @@ def require_poster(user: User = Depends(get_current_user)) -> User:
     return user
 
 
+def require_rater(user: User = Depends(get_current_user)) -> User:
+    """Only alumni or company accounts can rate a student's idea."""
+    if user.role not in ("alumni", "company"):
+        raise HTTPException(status_code=403, detail="Only alumni or companies can rate ideas")
+    return user
+
+
 def require_admin(user: User = Depends(get_current_user)) -> User:
     if not is_admin_email(user.email):
         raise HTTPException(status_code=403, detail="Admin access only")
