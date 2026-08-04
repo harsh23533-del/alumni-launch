@@ -32,6 +32,15 @@ If you are a fresh Claude session picking this up: `git log --oneline feature/ba
         email can reach the reset screen and set a new password, since there's no email verification step.
         Fine for a college project; flag before any real-world deploy.
 
+- [x] Lock role selection after login — new `frontend/src/components/GuestOnlyRoute.jsx`, wraps
+      `/login`, `/signup`, `/signup/alumni`, `/signup/student`, `/signup/company`, `/admin/login` in
+      `App.jsx`. A logged-in user hitting any of these is redirected to their own dashboard
+      (alumni → `/alumni/dashboard`, student → `/student/applications`, company → `/jobs/dashboard`,
+      admin → `/admin/dashboard`, else `/`) instead of being allowed to re-pick a role. Must log out
+      first to reach login/signup again. `/forgot-password` intentionally left unguarded.
+      Parse-checked with esbuild (external-module resolution errors from missing node_modules are
+      expected and ignored, same as prior sessions — no real syntax errors).
+
 ## Not started yet
 - [ ] Admin: media-upload space for video/image/poster collections
 - [ ] Dedicated resume-upload corner for job/internship applications
@@ -39,14 +48,15 @@ If you are a fresh Claude session picking this up: `git log --oneline feature/ba
       accepted members
 - [ ] Private 1:1 messaging between idea owner and an interested student
 - [ ] Show logged-in user's profile summary wherever the AlumniLaunch logo/brand appears
-- [ ] Lock role selection after login — can't switch student/alumni without logout first
 - [ ] Admin chat messages should display as "Admin – AlumniLaunch" instead of admin's own name
 - [ ] Guests (not signed up): full homepage access + can view/send chat as "Unknown 1", "Unknown 2"...
 
 ## Heads-up for next session
-- The GitHub token used to push this batch was pasted into a Claude chat transcript, which means it's
-  exposed. It should be revoked from GitHub settings and a fresh one generated for the next session —
-  don't reuse the one from that transcript.
+- The GitHub token from two sessions ago was pasted into a Claude chat transcript and should already
+  be revoked — don't reuse it, it's dead either way.
+- This session (role-lock feature) has NOT been pushed yet — no token was available in this session's
+  context. Work is committed locally only, on top of commit b39abf4. Next session (or this one, if
+  given a fresh token) needs to push `feature/batch-2` to sync it to GitHub.
 
 ## Notes for whoever continues
 - Frontend: React + Vite, `frontend/src`. Nav lives in `components/Topbar.jsx` (desktop) and
