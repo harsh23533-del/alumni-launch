@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 
 export default function AlumniSignup() {
   const navigate = useNavigate();
@@ -85,7 +86,7 @@ export default function AlumniSignup() {
         <form className="card" onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="password">Set a password</label>
-            <input id="password" type="password" required minLength={6} value={form.password} onChange={update('password')} />
+            <PasswordInput id="password" required minLength={6} value={form.password} onChange={update('password')} />
           </div>
           <div className="field">
             <label htmlFor="name">Full name</label>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
+import PasswordInput from '../components/PasswordInput';
 
 export default function Login() {
   usePageTitle('Log In');
@@ -43,7 +44,10 @@ export default function Login() {
         </div>
         <div className="field">
           <label htmlFor="password">Password</label>
-          <input id="password" type="password" required value={form.password} onChange={update('password')} />
+          <PasswordInput id="password" required value={form.password} onChange={update('password')} />
+        </div>
+        <div style={{ textAlign: 'right', marginTop: -10, marginBottom: 18 }}>
+          <Link to="/forgot-password" style={{ fontSize: 13, color: 'var(--text-dim)' }}>Forgot password?</Link>
         </div>
         <button className="btn btn-brass" type="submit" disabled={submitting} style={{ width: '100%' }}>
           {submitting ? 'Logging in…' : 'Log in'}

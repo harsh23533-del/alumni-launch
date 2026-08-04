@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 
 export default function CompanySignup() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function CompanySignup() {
         </div>
         <div className="field">
           <label htmlFor="password">Password</label>
-          <input id="password" type="password" required minLength={6} value={form.password} onChange={update('password')} />
+          <PasswordInput id="password" required minLength={6} value={form.password} onChange={update('password')} />
         </div>
         <div className="field">
           <label htmlFor="company_name">Company name</label>

@@ -10,6 +10,8 @@ from app.models.models import (
 from app.schemas.schemas import (
     AlumniSignupRequest, StudentSignupRequest, CompanySignupRequest, LoginRequest,
     CheckEmailResponse, TokenResponse, MeOut,
+    CheckAccountEmailRequest, CheckAccountEmailResponse,
+    ResetPasswordRequest, ResetPasswordResponse,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -177,3 +179,36 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_access_token({"sub": user.id, "role": user.role.value})
     return TokenResponse(access_token=token, role=user.role.value, is_admin=is_admin_email(user.email))
+
+
+@router.post("/forgot-password/check", response_model=CheckAccountEmailResponse)
+def check_account_email(payload: CheckAccountEmailRequest, db: Session = Depends(get_db)):
+    """
+    Step 1 of forgot-password: confirm the email exists in the database.
+    No email is sent — this app has no email-sending infra, so if the account
+    exists, the frontend goes straight to the reset-password screen.
+    """
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        return CheckAccountEmailResponse(found=False, message="No account found with this email.")
+    return CheckAccountEmailResponse(found=True, message="Account found. You can reset your password now.")
+
+
+@router.post("/forgot-password/reset", response_model=ResetPasswordResponse)
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Step 2 of forgot-password: set a new password directly.
+    Relies on the frontend only reaching this screen after a successful
+    /forgot-password/check call for the same email.
+    """
+    if len(payload.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with this email.")
+
+    user.hashed_password = hash_password(payload.new_password)
+    db.commit()
+
+    return ResetPasswordResponse(status="reset", message="Password reset successfully. You can log in now.")

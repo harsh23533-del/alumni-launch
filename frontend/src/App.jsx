@@ -10,6 +10,7 @@ import AlumniSignup from './pages/AlumniSignup';
 import StudentSignup from './pages/StudentSignup';
 import CompanySignup from './pages/CompanySignup';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import BrowseStartups from './pages/BrowseStartups';
 import PostStartup from './pages/PostStartup';
 import AlumniDashboard from './pages/AlumniDashboard';
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/signup/student" element={<StudentSignup />} />
           <Route path="/signup/company" element={<CompanySignup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/startups" element={<BrowseStartups />} />
           <Route path="/jobs" element={<BrowseJobs />} />
           <Route path="/ideas" element={<Ideas />} />
