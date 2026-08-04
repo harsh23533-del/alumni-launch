@@ -1,6 +1,8 @@
 # AlumniLaunch — Batch 2 Feature Progress
 
-Working branch: `feature/batch-2`
+Working branch: `feature/batch-2` (merged into `main` at commit `2208b60` — the 5 items below the
+line are now live on main). Continuing remaining items on `feature/batch-2` still, will merge again
+when the next chunk is done.
 Owner: Harsh (harsh23533-del)
 
 If you are a fresh Claude session picking this up: `git log --oneline feature/batch-2` and read the
