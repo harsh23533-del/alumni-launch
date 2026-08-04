@@ -40,6 +40,12 @@ If you are a fresh Claude session picking this up: `git log --oneline feature/ba
       first to reach login/signup again. `/forgot-password` intentionally left unguarded.
       Parse-checked with esbuild (external-module resolution errors from missing node_modules are
       expected and ignored, same as prior sessions — no real syntax errors).
+- [x] Admin chat messages show "Admin – AlumniLaunch" instead of the admin's own name/email —
+      `backend/app/routers/chat.py` now checks `is_admin_email(user.email)` in both `_display_name`
+      and the stored `sender_role` (set to `"admin"`), so it works regardless of which role
+      (alumni/student/company) the admin account technically has. Frontend `Chat.jsx` got an `admin`
+      entry in `ROLE_COLORS` for the badge. Known limitation: this only affects messages sent from
+      now on — old chat history rows already have the admin's real name baked in, no backfill done.
 
 ## Not started yet
 - [ ] Admin: media-upload space for video/image/poster collections
@@ -48,15 +54,12 @@ If you are a fresh Claude session picking this up: `git log --oneline feature/ba
       accepted members
 - [ ] Private 1:1 messaging between idea owner and an interested student
 - [ ] Show logged-in user's profile summary wherever the AlumniLaunch logo/brand appears
-- [ ] Admin chat messages should display as "Admin – AlumniLaunch" instead of admin's own name
 - [ ] Guests (not signed up): full homepage access + can view/send chat as "Unknown 1", "Unknown 2"...
 
 ## Heads-up for next session
-- The GitHub token from two sessions ago was pasted into a Claude chat transcript and should already
-  be revoked — don't reuse it, it's dead either way.
-- This session (role-lock feature) has NOT been pushed yet — no token was available in this session's
-  context. Work is committed locally only, on top of commit b39abf4. Next session (or this one, if
-  given a fresh token) needs to push `feature/batch-2` to sync it to GitHub.
+- Every token used so far (this session included) has been pasted directly into a Claude chat, which
+  means each one is exposed the moment it's used. Revoke the current one from GitHub settings after
+  this session ends and generate a fresh one next time — don't reuse it.
 
 ## Notes for whoever continues
 - Frontend: React + Vite, `frontend/src`. Nav lives in `components/Topbar.jsx` (desktop) and
