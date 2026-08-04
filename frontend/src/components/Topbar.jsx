@@ -41,7 +41,6 @@ export default function Topbar() {
           <>
             <button onClick={() => navigate('/startups')}>Browse startups</button>
             <button onClick={() => navigate('/jobs')}>Jobs</button>
-            <button onClick={() => navigate('/student/applications')}>My applications</button>
             <button onClick={() => navigate('/ideas')}>Ideas</button>
             <button onClick={() => navigate('/messages')}>Messages</button>
             <button onClick={() => navigate('/chat')}>Chat</button>

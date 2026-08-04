@@ -45,6 +45,11 @@ const icons = {
       <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" />
     </svg>
   ),
+  logout: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" />
+    </svg>
+  ),
 };
 
 function buildTabs({ isAuthenticated, role, isAdmin }) {
@@ -60,6 +65,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'admin', label: 'Admin', icon: 'admin', path: '/admin/dashboard' },
+      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   if (role === 'alumni') {
@@ -70,6 +76,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
+      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   if (role === 'student') {
@@ -80,6 +87,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'applications', label: 'Applied', icon: 'post', path: '/student/applications' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
+      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   // company
@@ -90,13 +98,14 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
     { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
     { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
+    { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
   ];
 }
 
 export default function MobileBottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, role, isAdmin } = useAuth();
+  const { isAuthenticated, role, isAdmin, logout } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -120,12 +129,19 @@ export default function MobileBottomNav() {
   return (
     <nav className="mobile-bottom-nav" aria-label="Primary">
       {tabs.map((tab) => {
-        const isActive = tab.path === '/' ? location.pathname === '/' : location.pathname.startsWith(tab.path);
+        const isActive = tab.action ? false : (tab.path === '/' ? location.pathname === '/' : location.pathname.startsWith(tab.path));
         return (
           <button
             key={tab.id}
             className={`mobile-nav-item${isActive ? ' mobile-nav-item-active' : ''}`}
-            onClick={() => navigate(tab.path)}
+            onClick={() => {
+              if (tab.action === 'logout') {
+                logout();
+                navigate('/');
+              } else {
+                navigate(tab.path);
+              }
+            }}
           >
             <span className="mobile-nav-icon">
               {icons[tab.icon]}
