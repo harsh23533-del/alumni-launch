@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 
-const ROLE_COLORS = { alumni: 'var(--brass)', student: 'var(--teal)', company: 'var(--coral, #E76F51)' };
+const ROLE_COLORS = { alumni: 'var(--brass)', student: 'var(--teal)', company: 'var(--coral, #E76F51)', admin: '#C1272D' };
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);

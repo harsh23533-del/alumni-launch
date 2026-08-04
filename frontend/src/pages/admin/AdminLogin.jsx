@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import PasswordInput from '../../components/PasswordInput';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function AdminLogin() {
         </div>
         <div className="field">
           <label htmlFor="admin-password">Password</label>
-          <input id="admin-password" type="password" required value={form.password} onChange={update('password')} />
+          <PasswordInput id="admin-password" required value={form.password} onChange={update('password')} />
         </div>
         <button className="btn btn-brass" type="submit" disabled={submitting} style={{ width: '100%' }}>
           {submitting ? 'Logging in…' : 'Log in as admin'}

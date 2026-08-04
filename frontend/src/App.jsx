@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import GuestOnlyRoute from './components/GuestOnlyRoute';
 import Topbar from './components/Topbar';
 import MobileBottomNav from './components/MobileBottomNav';
 
@@ -10,6 +11,7 @@ import AlumniSignup from './pages/AlumniSignup';
 import StudentSignup from './pages/StudentSignup';
 import CompanySignup from './pages/CompanySignup';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import BrowseStartups from './pages/BrowseStartups';
 import PostStartup from './pages/PostStartup';
 import AlumniDashboard from './pages/AlumniDashboard';
@@ -30,11 +32,12 @@ export default function App() {
         <Topbar />
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/signup" element={<SignupChoice />} />
-          <Route path="/signup/alumni" element={<AlumniSignup />} />
-          <Route path="/signup/student" element={<StudentSignup />} />
-          <Route path="/signup/company" element={<CompanySignup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<GuestOnlyRoute><SignupChoice /></GuestOnlyRoute>} />
+          <Route path="/signup/alumni" element={<GuestOnlyRoute><AlumniSignup /></GuestOnlyRoute>} />
+          <Route path="/signup/student" element={<GuestOnlyRoute><StudentSignup /></GuestOnlyRoute>} />
+          <Route path="/signup/company" element={<GuestOnlyRoute><CompanySignup /></GuestOnlyRoute>} />
+          <Route path="/login" element={<GuestOnlyRoute><Login /></GuestOnlyRoute>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/startups" element={<BrowseStartups />} />
           <Route path="/jobs" element={<BrowseJobs />} />
           <Route path="/ideas" element={<Ideas />} />
@@ -64,7 +67,7 @@ export default function App() {
             <ProtectedRoute><Chat /></ProtectedRoute>
           } />
 
-          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/login" element={<GuestOnlyRoute><AdminLogin /></GuestOnlyRoute>} />
           <Route path="/admin/dashboard" element={
             <ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>
           } />

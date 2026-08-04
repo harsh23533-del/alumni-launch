@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal, get_db
 from app.core.deps import get_current_user_ws
+from app.core.security import is_admin_email
 from app.models.models import ChatMessage, User
 from app.schemas.schemas import ChatMessageOut
 
@@ -72,7 +73,9 @@ async def chat_ws(websocket: WebSocket, user: User = Depends(get_current_user_ws
                 msg = ChatMessage(
                     user_id=user.id,
                     sender_name=_display_name(user),
-                    sender_role=user.role.value if hasattr(user.role, "value") else user.role,
+                    sender_role="admin" if is_admin_email(user.email) else (
+                        user.role.value if hasattr(user.role, "value") else user.role
+                    ),
                     content=content,
                 )
                 db.add(msg)
@@ -93,6 +96,8 @@ async def chat_ws(websocket: WebSocket, user: User = Depends(get_current_user_ws
 
 
 def _display_name(user: User) -> str:
+    if is_admin_email(user.email):
+        return "Admin \u2013 AlumniLaunch"
     if user.role.value == "alumni" and user.alumni_profile:
         return user.alumni_profile.name or user.email
     if user.role.value == "student" and user.student_profile:

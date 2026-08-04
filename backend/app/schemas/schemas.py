@@ -59,6 +59,25 @@ class SignupPendingResponse(BaseModel):
     message: str
 
 
+class CheckAccountEmailRequest(BaseModel):
+    email: EmailStr
+
+
+class CheckAccountEmailResponse(BaseModel):
+    found: bool
+    message: str
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    new_password: str
+
+
+class ResetPasswordResponse(BaseModel):
+    status: str = "reset"
+    message: str
+
+
 class MeOut(BaseModel):
     id: str
     email: str
