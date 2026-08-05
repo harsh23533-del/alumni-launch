@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import require_admin
+from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.security import verify_password, create_access_token, is_admin_email
 from app.models.models import (
     User,
@@ -347,16 +348,13 @@ def upload_media(
 ):
     if media_type not in ("image", "video"):
         raise HTTPException(status_code=400, detail="media_type must be 'image' or 'video'")
-    ext = os.path.splitext(file.filename)[1]
-    filename = f"{uuid.uuid4()}{ext}"
-    filepath = os.path.join(MEDIA_DIR, filename)
-    with open(filepath, "wb") as f:
-        f.write(file.file.read())
+
+    file_url = upload_to_cloudinary(file.file, folder="alumni_launch/admin_media", resource_type=media_type)
 
     item = AdminMedia(
         title=title,
         media_type=media_type,
-        file_url=f"/{filepath}",
+        file_url=file_url,
         uploaded_by_id=admin.id,
     )
     db.add(item)

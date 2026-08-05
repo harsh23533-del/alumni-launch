@@ -6,7 +6,11 @@ import usePageTitle from '../hooks/usePageTitle';
 import IdeaGroupPanel from '../components/IdeaGroupPanel';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
-const fileUrl = (path) => (path ? `${API_ORIGIN}/${path.replace(/\\/g, '/')}` : null);
+const fileUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `${API_ORIGIN}/${path.replace(/\\/g, '/')}`;
+};
 
 function Stars({ value, onRate, readOnly }) {
   const [hover, setHover] = useState(0);

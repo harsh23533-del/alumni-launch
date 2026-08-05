@@ -1,10 +1,10 @@
 import os
-import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
 from app.core.deps import require_alumni, require_student
 from app.models.models import Application, ApplicationStatus, Startup, User
@@ -12,9 +12,6 @@ from app.schemas.schemas import ApplicationOut, ApplicationStatusUpdate
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/applications", tags=["applications"])
-
-RESUME_DIR = "uploads/resumes"
-os.makedirs(RESUME_DIR, exist_ok=True)
 
 
 @router.post("", response_model=ApplicationOut)
@@ -39,12 +36,7 @@ async def apply_to_startup(
 
     resume_url = user.student_profile.resume_url  # default to profile resume
     if resume:
-        ext = os.path.splitext(resume.filename)[1]
-        filename = f"{uuid.uuid4()}{ext}"
-        filepath = os.path.join(RESUME_DIR, filename)
-        with open(filepath, "wb") as f:
-            f.write(await resume.read())
-        resume_url = filepath
+        resume_url = upload_to_cloudinary(resume.file, folder="alumni_launch/resumes", resource_type="raw")
 
     application = Application(
         startup_id=startup_id,

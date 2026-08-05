@@ -98,7 +98,7 @@ export default function AlumniDashboard() {
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
                       <Seal status={a.status} />
                       {a.resume_url && (
-                        <a href={`${api.defaults.baseURL}/${a.resume_url}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', textDecoration: 'underline' }}>
+                        <a href={a.resume_url.startsWith('http') ? a.resume_url : `${api.defaults.baseURL}/${a.resume_url}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', textDecoration: 'underline' }}>
                           View resume
                         </a>
                       )}

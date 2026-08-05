@@ -5,6 +5,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_student, require_rater
 from app.models.models import Idea, IdeaRating, IdeaJoinRequest, IdeaJoinRequestStatus, IdeaGroupMessage, StudentProfile, User
@@ -17,20 +18,9 @@ from app.utils.notify import notify_admin, notify_user, broadcast
 
 router = APIRouter(prefix="/ideas", tags=["ideas"])
 
-POSTER_DIR = "uploads/idea_posters"
-DOCUMENT_DIR = "uploads/idea_documents"
-VOICE_DIR = "uploads/idea_voice_notes"
-for d in (POSTER_DIR, DOCUMENT_DIR, VOICE_DIR):
-    os.makedirs(d, exist_ok=True)
 
-
-def _save_upload(upload: UploadFile, directory: str) -> str:
-    ext = os.path.splitext(upload.filename)[1]
-    filename = f"{uuid.uuid4()}{ext}"
-    filepath = os.path.join(directory, filename)
-    with open(filepath, "wb") as f:
-        f.write(upload.file.read())
-    return filepath
+def _save_upload(upload: UploadFile, resource_type: str) -> str:
+    return upload_to_cloudinary(upload.file, folder="alumni_launch/ideas", resource_type=resource_type)
 
 
 def _serialize(idea: Idea, viewer: Optional[User] = None) -> IdeaOut:
@@ -67,11 +57,11 @@ async def create_idea(
         requirement=requirement,
     )
     if poster is not None and poster.filename:
-        idea.poster_url = _save_upload(poster, POSTER_DIR)
+        idea.poster_url = _save_upload(poster, "image")
     if document is not None and document.filename:
-        idea.document_url = _save_upload(document, DOCUMENT_DIR)
+        idea.document_url = _save_upload(document, "raw")
     if voice_note is not None and voice_note.filename:
-        idea.voice_note_url = _save_upload(voice_note, VOICE_DIR)
+        idea.voice_note_url = _save_upload(voice_note, "video")  # audio uploads use Cloudinary's video pipeline
 
     db.add(idea)
     db.commit()

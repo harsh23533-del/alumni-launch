@@ -1,18 +1,15 @@
 import os
-import uuid
 
 from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_student
 from app.models.models import User
 from app.schemas.schemas import AlumniProfileOut, CompanyProfileOut, StudentProfileOut
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
-
-RESUME_DIR = "uploads/resumes"
-os.makedirs(RESUME_DIR, exist_ok=True)
 
 
 @router.get("/me")
@@ -30,13 +27,9 @@ async def upload_resume(
     db: Session = Depends(get_db),
     user: User = Depends(require_student),
 ):
-    ext = os.path.splitext(resume.filename)[1]
-    filename = f"{uuid.uuid4()}{ext}"
-    filepath = os.path.join(RESUME_DIR, filename)
-    with open(filepath, "wb") as f:
-        f.write(await resume.read())
+    resume_url = upload_to_cloudinary(resume.file, folder="alumni_launch/resumes", resource_type="raw")
 
-    user.student_profile.resume_url = filepath
+    user.student_profile.resume_url = resume_url
     db.commit()
     db.refresh(user.student_profile)
     return user.student_profile
