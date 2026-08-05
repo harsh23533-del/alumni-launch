@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_student
 from app.models.models import User
-from app.schemas.schemas import AlumniProfileOut, StudentProfileOut
+from app.schemas.schemas import AlumniProfileOut, CompanyProfileOut, StudentProfileOut
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
 
@@ -19,6 +19,8 @@ os.makedirs(RESUME_DIR, exist_ok=True)
 def get_my_profile(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     if user.role == "alumni":
         return AlumniProfileOut.model_validate(user.alumni_profile)
+    if user.role == "company":
+        return CompanyProfileOut.model_validate(user.company_profile)
     return StudentProfileOut.model_validate(user.student_profile)
 
 

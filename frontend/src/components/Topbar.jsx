@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
+import ProfileSummary from './ProfileSummary';
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -8,9 +9,12 @@ export default function Topbar() {
 
   return (
     <div className="topbar">
-      <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-        <span className="brand-seal">A</span>
-        AlumniLaunch
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          <span className="brand-seal">A</span>
+          AlumniLaunch
+        </div>
+        {isAuthenticated && !isAdmin && <ProfileSummary />}
       </div>
       <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {!isAuthenticated && (
