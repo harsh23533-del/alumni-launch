@@ -269,6 +269,20 @@ class ChatMessage(Base):
     user = relationship("User")
 
 
+class AdminMedia(Base):
+    """Video/image/poster uploads shown to admin for the media/gallery space."""
+    __tablename__ = "admin_media"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    title = Column(String, nullable=False)
+    media_type = Column(String, nullable=False)  # image | video
+    file_url = Column(String, nullable=False)
+    uploaded_by_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    uploaded_by = relationship("User")
+
+
 class Notification(Base):
     __tablename__ = "notifications"
 

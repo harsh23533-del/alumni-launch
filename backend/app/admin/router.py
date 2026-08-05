@@ -14,7 +14,10 @@ gives that account:
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+import os
+import uuid
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -32,6 +35,7 @@ from app.models.models import (
     StudentApprovalStatus,
     ChatMessage,
     Notification,
+    AdminMedia,
 )
 from app.schemas.schemas import (
     LoginRequest,
@@ -43,10 +47,13 @@ from app.schemas.schemas import (
     ApplicationOut,
     JobApplicationOut,
 )
-from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut
+from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+MEDIA_DIR = "uploads/admin_media"
+os.makedirs(MEDIA_DIR, exist_ok=True)
 
 
 def _purge_user(db: Session, user_id: str):
@@ -328,3 +335,50 @@ def list_all_applications(db: Session = Depends(get_db), admin: User = Depends(r
 def list_all_job_applications(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     rows = db.query(JobApplication).order_by(JobApplication.created_at.desc()).all()
     return rows
+
+
+@router.post("/media", response_model=AdminMediaOut)
+def upload_media(
+    title: str = Form(...),
+    media_type: str = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    if media_type not in ("image", "video"):
+        raise HTTPException(status_code=400, detail="media_type must be 'image' or 'video'")
+    ext = os.path.splitext(file.filename)[1]
+    filename = f"{uuid.uuid4()}{ext}"
+    filepath = os.path.join(MEDIA_DIR, filename)
+    with open(filepath, "wb") as f:
+        f.write(file.file.read())
+
+    item = AdminMedia(
+        title=title,
+        media_type=media_type,
+        file_url=f"/{filepath}",
+        uploaded_by_id=admin.id,
+    )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.get("/media", response_model=List[AdminMediaOut])
+def list_media(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    return db.query(AdminMedia).order_by(AdminMedia.created_at.desc()).all()
+
+
+@router.delete("/media/{media_id}")
+def delete_media(media_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    item = db.query(AdminMedia).filter(AdminMedia.id == media_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Not found")
+    try:
+        os.remove(item.file_url.lstrip("/"))
+    except OSError:
+        pass
+    db.delete(item)
+    db.commit()
+    return {"message": "deleted"}

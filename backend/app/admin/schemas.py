@@ -4,6 +4,17 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class AdminMediaOut(BaseModel):
+    id: str
+    title: str
+    media_type: str
+    file_url: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class AdminDashboardOut(BaseModel):
     total_students: int
     pending_students: int

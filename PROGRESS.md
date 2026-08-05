@@ -1,6 +1,6 @@
 # AlumniLaunch — Batch 2 Feature Progress
 
-Working branch: `feature/batch-2` (merged into `main` at commit `2208b60` — the 5 items below the
+Working branch: `feature/batch-2` (kept in sync with main). Admin media upload done, now 5 items left.
 line are now live on main). Continuing remaining items on `feature/batch-2` still, will merge again
 when the next chunk is done.
 Owner: Harsh (harsh23533-del)
@@ -50,7 +50,7 @@ If you are a fresh Claude session picking this up: `git log --oneline feature/ba
       now on — old chat history rows already have the admin's real name baked in, no backfill done.
 
 ## Not started yet
-- [ ] Admin: media-upload space for video/image/poster collections
+- [x] Admin: media-upload space for video/image/poster collections (Media tab in admin dashboard)
 - [ ] Dedicated resume-upload corner for job/internship applications
 - [ ] Ideas: request-to-join flow (student → idea owner → accept → group), group only contains
       accepted members

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/client';
 
-const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications'];
+const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications', 'Media'];
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('Overview');
@@ -378,6 +378,95 @@ export default function AdminDashboard() {
           </List>
         </>
       )}
+
+      {tab === 'Media' && <AdminMediaPanel />}
+    </div>
+  );
+}
+
+function AdminMediaPanel() {
+  const [items, setItems] = useState(null);
+  const [title, setTitle] = useState('');
+  const [mediaType, setMediaType] = useState('image');
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = () => api.get('/admin/media').then((res) => setItems(res.data)).catch(() => setItems([]));
+  useEffect(() => { load(); }, []);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file || !title.trim()) return;
+    setUploading(true);
+    setError('');
+    try {
+      const form = new FormData();
+      form.append('title', title);
+      form.append('media_type', mediaType);
+      form.append('file', file);
+      await api.post('/admin/media', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setTitle('');
+      setFile(null);
+      load();
+    } catch (err) {
+      setError(err?.response?.data?.detail || 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    await api.delete(`/admin/media/${id}`);
+    load();
+  };
+
+  return (
+    <div>
+      <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>
+        Upload video, image, or poster
+      </h3>
+      <form onSubmit={handleUpload} className="card" style={{ padding: 16, display: 'grid', gap: 10, maxWidth: 480, marginBottom: 24 }}>
+        <input
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <select value={mediaType} onChange={(e) => setMediaType(e.target.value)}>
+          <option value="image">Image / Poster</option>
+          <option value="video">Video</option>
+        </select>
+        <input
+          type="file"
+          accept={mediaType === 'video' ? 'video/*' : 'image/*'}
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          required
+        />
+        {error && <div className="error-banner">{error}</div>}
+        <button className="btn btn-brass" type="submit" disabled={uploading}>
+          {uploading ? 'Uploading…' : 'Upload'}
+        </button>
+      </form>
+
+      <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>Uploaded media</h3>
+      <List loading={!items} empty={items && items.length === 0} emptyText="No media uploaded yet.">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
+          {items?.map((m) => (
+            <div key={m.id} className="card" style={{ padding: 10 }}>
+              {m.media_type === 'video' ? (
+                <video src={m.file_url} controls style={{ width: '100%', borderRadius: 6 }} />
+              ) : (
+                <img src={m.file_url} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+              )}
+              <div style={{ fontSize: 13.5, marginTop: 6 }}>{m.title}</div>
+              <button className="btn btn-ghost" style={{ fontSize: 12, padding: '4px 10px', marginTop: 6 }} onClick={() => handleDelete(m.id)}>
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      </List>
     </div>
   );
 }
