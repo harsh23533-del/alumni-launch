@@ -280,6 +280,39 @@ class ApplicationStatusUpdate(BaseModel):
 
 # ---------- Ideas ----------
 
+class IdeaJoinRequestCreate(BaseModel):
+    message: Optional[str] = None
+
+
+class IdeaJoinRequestOut(BaseModel):
+    id: str
+    idea_id: str
+    requester_id: str
+    requester_name: Optional[str] = None
+    status: str
+    message: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class IdeaGroupMessageCreate(BaseModel):
+    content: str
+
+
+class IdeaGroupMessageOut(BaseModel):
+    id: str
+    idea_id: str
+    sender_id: str
+    sender_name: Optional[str] = None
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class IdeaOut(BaseModel):
     id: str
     student_id: str

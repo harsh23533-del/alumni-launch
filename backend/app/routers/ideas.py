@@ -7,9 +7,13 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_student, require_rater
-from app.models.models import Idea, IdeaRating, StudentProfile, User
-from app.schemas.schemas import IdeaOut, IdeaRatingCreate, IdeaRatingOut
-from app.utils.notify import notify_admin, broadcast
+from app.models.models import Idea, IdeaRating, IdeaJoinRequest, IdeaJoinRequestStatus, IdeaGroupMessage, StudentProfile, User
+from app.schemas.schemas import (
+    IdeaOut, IdeaRatingCreate, IdeaRatingOut,
+    IdeaJoinRequestCreate, IdeaJoinRequestOut,
+    IdeaGroupMessageCreate, IdeaGroupMessageOut,
+)
+from app.utils.notify import notify_admin, notify_user, broadcast
 
 router = APIRouter(prefix="/ideas", tags=["ideas"])
 
@@ -144,4 +148,193 @@ def rate_idea(
 
     out = IdeaRatingOut.model_validate(rating)
     out.rater_name = rater_name
+    return out
+
+
+def _display_name(user: User) -> str:
+    if user.role == "alumni" and user.alumni_profile:
+        return user.alumni_profile.name or user.email
+    if user.role == "student" and user.student_profile:
+        return user.student_profile.name or user.email
+    if user.role == "company" and user.company_profile:
+        return user.company_profile.company_name or user.email
+    return user.email
+
+
+def _is_owner(idea: Idea, user: User) -> bool:
+    return user.role == "student" and user.student_profile and idea.student_id == user.student_profile.id
+
+
+def _is_accepted_member(db: Session, idea_id: str, user_id: str) -> bool:
+    return db.query(IdeaJoinRequest).filter(
+        IdeaJoinRequest.idea_id == idea_id,
+        IdeaJoinRequest.requester_id == user_id,
+        IdeaJoinRequest.status == IdeaJoinRequestStatus.accepted,
+    ).first() is not None
+
+
+@router.post("/{idea_id}/join-requests", response_model=IdeaJoinRequestOut)
+def request_to_join(
+    idea_id: str,
+    payload: IdeaJoinRequestCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_student),
+):
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if _is_owner(idea, user):
+        raise HTTPException(status_code=400, detail="You can't request to join your own idea")
+
+    existing = db.query(IdeaJoinRequest).filter(
+        IdeaJoinRequest.idea_id == idea_id, IdeaJoinRequest.requester_id == user.id
+    ).first()
+    if existing:
+        if existing.status == IdeaJoinRequestStatus.pending:
+            raise HTTPException(status_code=400, detail="Request already pending")
+        if existing.status == IdeaJoinRequestStatus.accepted:
+            raise HTTPException(status_code=400, detail="You're already in this group")
+        existing.status = IdeaJoinRequestStatus.pending
+        existing.message = payload.message
+        db.commit()
+        db.refresh(existing)
+        req = existing
+    else:
+        req = IdeaJoinRequest(idea_id=idea_id, requester_id=user.id, message=payload.message)
+        db.add(req)
+        db.commit()
+        db.refresh(req)
+
+    notify_user(
+        db,
+        user_id=idea.student.user_id,
+        title="New join request",
+        message=f"{_display_name(user)} wants to join your idea: {idea.title}",
+        link="/ideas",
+    )
+
+    out = IdeaJoinRequestOut.model_validate(req)
+    out.requester_name = _display_name(user)
+    return out
+
+
+@router.get("/{idea_id}/join-requests", response_model=List[IdeaJoinRequestOut])
+def list_join_requests(idea_id: str, db: Session = Depends(get_db), user: User = Depends(require_student)):
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if not _is_owner(idea, user):
+        raise HTTPException(status_code=403, detail="Only the idea owner can view join requests")
+
+    requests = db.query(IdeaJoinRequest).filter(IdeaJoinRequest.idea_id == idea_id).order_by(
+        IdeaJoinRequest.created_at.desc()
+    ).all()
+    out = []
+    for r in requests:
+        item = IdeaJoinRequestOut.model_validate(r)
+        item.requester_name = _display_name(r.requester)
+        out.append(item)
+    return out
+
+
+@router.post("/join-requests/{request_id}/accept", response_model=IdeaJoinRequestOut)
+def accept_join_request(request_id: str, db: Session = Depends(get_db), user: User = Depends(require_student)):
+    req = db.query(IdeaJoinRequest).filter(IdeaJoinRequest.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+    if not _is_owner(req.idea, user):
+        raise HTTPException(status_code=403, detail="Only the idea owner can accept requests")
+
+    req.status = IdeaJoinRequestStatus.accepted
+    db.commit()
+    db.refresh(req)
+
+    notify_user(
+        db,
+        user_id=req.requester_id,
+        title="Join request accepted",
+        message=f"You're now part of the group for: {req.idea.title}",
+        link="/ideas",
+    )
+
+    out = IdeaJoinRequestOut.model_validate(req)
+    out.requester_name = _display_name(req.requester)
+    return out
+
+
+@router.post("/join-requests/{request_id}/reject", response_model=IdeaJoinRequestOut)
+def reject_join_request(request_id: str, db: Session = Depends(get_db), user: User = Depends(require_student)):
+    req = db.query(IdeaJoinRequest).filter(IdeaJoinRequest.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+    if not _is_owner(req.idea, user):
+        raise HTTPException(status_code=403, detail="Only the idea owner can reject requests")
+
+    req.status = IdeaJoinRequestStatus.rejected
+    db.commit()
+    db.refresh(req)
+
+    out = IdeaJoinRequestOut.model_validate(req)
+    out.requester_name = _display_name(req.requester)
+    return out
+
+
+@router.get("/{idea_id}/group/members", response_model=List[IdeaJoinRequestOut])
+def list_group_members(idea_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if not (_is_owner(idea, user) or _is_accepted_member(db, idea_id, user.id)):
+        raise HTTPException(status_code=403, detail="Only group members can view this")
+
+    members = db.query(IdeaJoinRequest).filter(
+        IdeaJoinRequest.idea_id == idea_id, IdeaJoinRequest.status == IdeaJoinRequestStatus.accepted
+    ).all()
+    out = []
+    for m in members:
+        item = IdeaJoinRequestOut.model_validate(m)
+        item.requester_name = _display_name(m.requester)
+        out.append(item)
+    return out
+
+
+@router.get("/{idea_id}/group/messages", response_model=List[IdeaGroupMessageOut])
+def list_group_messages(idea_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if not (_is_owner(idea, user) or _is_accepted_member(db, idea_id, user.id)):
+        raise HTTPException(status_code=403, detail="Only group members can view this")
+
+    messages = db.query(IdeaGroupMessage).filter(IdeaGroupMessage.idea_id == idea_id).order_by(
+        IdeaGroupMessage.created_at.asc()
+    ).all()
+    out = []
+    for m in messages:
+        item = IdeaGroupMessageOut.model_validate(m)
+        item.sender_name = _display_name(m.sender)
+        out.append(item)
+    return out
+
+
+@router.post("/{idea_id}/group/messages", response_model=IdeaGroupMessageOut)
+def send_group_message(
+    idea_id: str,
+    payload: IdeaGroupMessageCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if not (_is_owner(idea, user) or _is_accepted_member(db, idea_id, user.id)):
+        raise HTTPException(status_code=403, detail="Only group members can post here")
+
+    msg = IdeaGroupMessage(idea_id=idea_id, sender_id=user.id, content=payload.content)
+    db.add(msg)
+    db.commit()
+    db.refresh(msg)
+
+    out = IdeaGroupMessageOut.model_validate(msg)
+    out.sender_name = _display_name(user)
     return out

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
+import IdeaGroupPanel from '../components/IdeaGroupPanel';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const fileUrl = (path) => (path ? `${API_ORIGIN}/${path.replace(/\\/g, '/')}` : null);
@@ -295,6 +296,8 @@ export default function Ideas() {
                 </div>
               )}
             </div>
+
+            {isAuthenticated && role === 'student' && <IdeaGroupPanel idea={openIdea} />}
 
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
               <button className="btn btn-ghost" onClick={() => setOpenIdea(null)} style={{ flex: 1 }}>Close</button>

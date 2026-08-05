@@ -3,10 +3,21 @@ import api from '../api/client';
 
 const AuthContext = createContext(null);
 
+function decodeUserId(token) {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub || null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [role, setRole] = useState(localStorage.getItem('role'));
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
+  const userId = decodeUserId(token);
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
@@ -60,7 +71,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ token, role, isAdmin, isAuthenticated: !!token, login, loginAdmin, signupAlumni, signupStudent, signupCompany, logout }}
+      value={{ token, role, isAdmin, userId, isAuthenticated: !!token, login, loginAdmin, signupAlumni, signupStudent, signupCompany, logout }}
     >
       {children}
     </AuthContext.Provider>

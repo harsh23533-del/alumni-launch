@@ -236,6 +236,43 @@ class IdeaRating(Base):
     rater = relationship("User")
 
 
+class IdeaJoinRequestStatus(str, enum.Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+
+
+class IdeaJoinRequest(Base):
+    """A student asking to join another student's idea team. Owner accepts/rejects;
+    accepted requesters become group members."""
+    __tablename__ = "idea_join_requests"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    idea_id = Column(UUID(as_uuid=False), ForeignKey("ideas.id"), nullable=False)
+    requester_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    status = Column(Enum(IdeaJoinRequestStatus), default=IdeaJoinRequestStatus.pending)
+    message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    idea = relationship("Idea")
+    requester = relationship("User")
+
+
+class IdeaGroupMessage(Base):
+    """Group chat scoped to one idea — visible only to the idea's owner and
+    students whose join request has been accepted."""
+    __tablename__ = "idea_group_messages"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    idea_id = Column(UUID(as_uuid=False), ForeignKey("ideas.id"), nullable=False)
+    sender_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    idea = relationship("Idea")
+    sender = relationship("User")
+
+
 class DirectMessage(Base):
     """Private 1:1 messages — e.g. an alumni or student messaging an idea's
     author. Only visible to the two people in the conversation."""
