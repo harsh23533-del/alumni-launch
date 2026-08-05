@@ -365,6 +365,12 @@ def upload_media(
     return item
 
 
+@router.get("/media/public", response_model=List[AdminMediaOut])
+def list_media_public(db: Session = Depends(get_db)):
+    """No auth — this is what the public homepage gallery reads from."""
+    return db.query(AdminMedia).order_by(AdminMedia.created_at.desc()).all()
+
+
 @router.get("/media", response_model=List[AdminMediaOut])
 def list_media(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     return db.query(AdminMedia).order_by(AdminMedia.created_at.desc()).all()

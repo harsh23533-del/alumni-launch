@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import usePageTitle from '../hooks/usePageTitle';
+import api from '../api/client';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -125,6 +127,37 @@ export default function Landing() {
             Browse open startups without an account →
           </button>
         </div>
+
+        <MediaGallery />
+      </div>
+    </div>
+  );
+}
+
+function MediaGallery() {
+  const [items, setItems] = useState(null);
+
+  useEffect(() => {
+    api.get('/admin/media/public').then((res) => setItems(res.data)).catch(() => setItems([]));
+  }, []);
+
+  if (items && items.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: 56 }}>
+      <h3 style={{ fontSize: 20, textAlign: 'center', marginBottom: 20 }}>From the campus</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+        {items?.map((m) => (
+          <div key={m.id} className="card" style={{ padding: 10 }}>
+            {m.media_type === 'video' ? (
+              <video src={m.file_url} controls style={{ width: '100%', borderRadius: 6 }} />
+            ) : (
+              <img src={m.file_url} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+            )}
+            <div style={{ fontSize: 13.5, marginTop: 6, textAlign: 'center' }}>{m.title}</div>
+          </div>
+        ))}
+        {!items && <p style={{ color: 'var(--text-dim)', textAlign: 'center' }}>Loading…</p>}
       </div>
     </div>
   );
