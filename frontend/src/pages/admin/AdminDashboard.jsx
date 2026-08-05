@@ -384,6 +384,11 @@ export default function AdminDashboard() {
   );
 }
 
+function mediaUrl(path) {
+  if (!path) return path;
+  return path.startsWith('http') ? path : `${api.defaults.baseURL}${path}`;
+}
+
 function AdminMediaPanel() {
   const [items, setItems] = useState(null);
   const [title, setTitle] = useState('');
@@ -455,9 +460,9 @@ function AdminMediaPanel() {
           {items?.map((m) => (
             <div key={m.id} className="card" style={{ padding: 10 }}>
               {m.media_type === 'video' ? (
-                <video src={m.file_url} controls style={{ width: '100%', borderRadius: 6 }} />
+                <video src={mediaUrl(m.file_url)} controls style={{ width: '100%', borderRadius: 6 }} />
               ) : (
-                <img src={m.file_url} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+                <img src={mediaUrl(m.file_url)} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
               )}
               <div style={{ fontSize: 13.5, marginTop: 6 }}>{m.title}</div>
               <button className="btn btn-ghost" style={{ fontSize: 12, padding: '4px 10px', marginTop: 6 }} onClick={() => handleDelete(m.id)}>

@@ -134,6 +134,11 @@ export default function Landing() {
   );
 }
 
+function mediaUrl(path) {
+  if (!path) return path;
+  return path.startsWith('http') ? path : `${api.defaults.baseURL}${path}`;
+}
+
 function MediaGallery() {
   const [items, setItems] = useState(null);
 
@@ -150,9 +155,9 @@ function MediaGallery() {
         {items?.map((m) => (
           <div key={m.id} className="card" style={{ padding: 10 }}>
             {m.media_type === 'video' ? (
-              <video src={m.file_url} controls style={{ width: '100%', borderRadius: 6 }} />
+              <video src={mediaUrl(m.file_url)} controls style={{ width: '100%', borderRadius: 6 }} />
             ) : (
-              <img src={m.file_url} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+              <img src={mediaUrl(m.file_url)} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
             )}
             <div style={{ fontSize: 13.5, marginTop: 6, textAlign: 'center' }}>{m.title}</div>
           </div>
