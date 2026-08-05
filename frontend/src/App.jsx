@@ -63,9 +63,7 @@ export default function App() {
             <ProtectedRoute role={["alumni", "company"]}><JobsDashboard /></ProtectedRoute>
           } />
 
-          <Route path="/chat" element={
-            <ProtectedRoute><Chat /></ProtectedRoute>
-          } />
+          <Route path="/chat" element={<Chat />} />
 
           <Route path="/admin/login" element={<GuestOnlyRoute><AdminLogin /></GuestOnlyRoute>} />
           <Route path="/admin/dashboard" element={

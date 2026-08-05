@@ -1,5 +1,6 @@
 import json
-from typing import List
+from itertools import count
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
@@ -16,14 +17,22 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 class ConnectionManager:
     def __init__(self):
         self.active: List[WebSocket] = []
+        self.guest_labels = {}
+        self._guest_counter = count(1)
 
     async def connect(self, ws: WebSocket):
         await ws.accept()
         self.active.append(ws)
 
+    def assign_guest_label(self, ws: WebSocket) -> str:
+        label = f"Unknown {next(self._guest_counter)}"
+        self.guest_labels[ws] = label
+        return label
+
     def disconnect(self, ws: WebSocket):
         if ws in self.active:
             self.active.remove(ws)
+        self.guest_labels.pop(ws, None)
 
     async def broadcast(self, data: dict):
         dead = []
@@ -50,12 +59,11 @@ def chat_history(db: Session = Depends(get_db)):
 
 
 @router.websocket("/ws")
-async def chat_ws(websocket: WebSocket, user: User = Depends(get_current_user_ws)):
-    if user is None:
-        await websocket.close(code=4401)
-        return
-
+async def chat_ws(websocket: WebSocket, user: Optional[User] = Depends(get_current_user_ws)):
+    # Guests (no/invalid token) are allowed in — they chat as "Unknown N".
     await manager.connect(websocket)
+    guest_label = None if user else manager.assign_guest_label(websocket)
+
     try:
         while True:
             raw = await websocket.receive_text()
@@ -70,12 +78,21 @@ async def chat_ws(websocket: WebSocket, user: User = Depends(get_current_user_ws
 
             db = SessionLocal()
             try:
-                msg = ChatMessage(
-                    user_id=user.id,
-                    sender_name=_display_name(user),
-                    sender_role="admin" if is_admin_email(user.email) else (
+                if user:
+                    sender_name = _display_name(user)
+                    sender_role = "admin" if is_admin_email(user.email) else (
                         user.role.value if hasattr(user.role, "value") else user.role
-                    ),
+                    )
+                    user_id = user.id
+                else:
+                    sender_name = guest_label
+                    sender_role = "guest"
+                    user_id = None
+
+                msg = ChatMessage(
+                    user_id=user_id,
+                    sender_name=sender_name,
+                    sender_role=sender_role,
                     content=content,
                 )
                 db.add(msg)

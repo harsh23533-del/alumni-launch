@@ -58,6 +58,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'startups', label: 'Startups', icon: 'browse', path: '/startups' },
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+      { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat' },
       { id: 'login', label: 'Log in', icon: 'profile', path: '/login' },
     ];
   }

@@ -22,6 +22,7 @@ export default function Topbar() {
             <button onClick={() => navigate('/startups')}>Browse startups</button>
             <button onClick={() => navigate('/jobs')}>Jobs</button>
             <button onClick={() => navigate('/ideas')}>Ideas</button>
+            <button onClick={() => navigate('/chat')}>Chat</button>
             <button onClick={() => navigate('/login')}>Log in</button>
             <button className="btn btn-primary" onClick={() => navigate('/signup')}>
               Sign up

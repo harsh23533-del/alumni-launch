@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 
-const ROLE_COLORS = { alumni: 'var(--brass)', student: 'var(--teal)', company: 'var(--coral, #E76F51)', admin: '#C1272D' };
+const ROLE_COLORS = { alumni: 'var(--brass)', student: 'var(--teal)', company: 'var(--coral, #E76F51)', admin: '#C1272D', guest: 'var(--text-dim)' };
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
@@ -24,7 +24,7 @@ export default function Chat() {
       const token = localStorage.getItem('token');
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const wsBase = apiBase.replace(/^http/, 'ws');
-      const ws = new WebSocket(`${wsBase}/chat/ws?token=${token}`);
+      const ws = new WebSocket(`${wsBase}/chat/ws${token ? `?token=${token}` : ''}`);
 
       ws.onopen = () => setConnected(true);
       ws.onclose = () => setConnected(false);
