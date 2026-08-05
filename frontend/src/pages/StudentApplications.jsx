@@ -2,17 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Seal from '../components/Seal';
+import ResumeCorner from '../components/ResumeCorner';
 
 export default function StudentApplications() {
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [startupsById, setStartupsById] = useState({});
   const [loading, setLoading] = useState(true);
+  const [resumePath, setResumePath] = useState(null);
 
   useEffect(() => {
     const load = async () => {
-      const appsRes = await api.get('/applications/mine');
+      const [appsRes, profileRes] = await Promise.all([
+        api.get('/applications/mine'),
+        api.get('/profiles/me').catch(() => null),
+      ]);
       setApplications(appsRes.data);
+      if (profileRes) setResumePath(profileRes.data.resume_url);
 
       const uniqueStartupIds = [...new Set(appsRes.data.map((a) => a.startup_id))];
       const startupResults = await Promise.all(
@@ -29,6 +35,8 @@ export default function StudentApplications() {
   return (
     <div className="page" style={{ paddingTop: 32 }}>
       <h2 style={{ fontSize: 26, marginBottom: 24 }}>My applications</h2>
+
+      <ResumeCorner resumePath={resumePath} onUploaded={setResumePath} />
 
       {loading && <p style={{ color: 'var(--text-dim)' }}>Loading…</p>}
 
