@@ -151,9 +151,23 @@ function MediaGallery() {
   return (
     <div style={{ marginTop: 56 }}>
       <h3 style={{ fontSize: 20, textAlign: 'center', marginBottom: 20 }}>From the campus</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 16,
+          overflowX: 'auto',
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: 12,
+          scrollbarWidth: 'thin',
+        }}
+      >
         {items?.map((m) => (
-          <div key={m.id} className="card" style={{ padding: 10 }}>
+          <div
+            key={m.id}
+            className="card"
+            style={{ padding: 10, flex: '0 0 260px', scrollSnapAlign: 'start' }}
+          >
             {m.media_type === 'video' ? (
               <video src={mediaUrl(m.file_url)} controls style={{ width: '100%', borderRadius: 6 }} />
             ) : (
