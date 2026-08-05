@@ -154,26 +154,76 @@ function MediaGallery() {
       <div
         style={{
           display: 'flex',
-          gap: 16,
+          gap: 18,
           overflowX: 'auto',
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          paddingBottom: 12,
-          scrollbarWidth: 'thin',
+          padding: '4px 4px 16px',
+          scrollbarWidth: 'none',
         }}
       >
         {items?.map((m) => (
           <div
             key={m.id}
-            className="card"
-            style={{ padding: 10, flex: '0 0 260px', scrollSnapAlign: 'start' }}
+            style={{
+              position: 'relative',
+              flex: '0 0 220px',
+              aspectRatio: '3 / 4',
+              borderRadius: 14,
+              overflow: 'hidden',
+              scrollSnapAlign: 'start',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+              border: '1px solid var(--line, rgba(255,255,255,0.08))',
+              background: '#0d0d14',
+            }}
           >
             {m.media_type === 'video' ? (
-              <video src={mediaUrl(m.file_url)} controls style={{ width: '100%', borderRadius: 6 }} />
+              <video
+                src={mediaUrl(m.file_url)}
+                controls
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             ) : (
-              <img src={mediaUrl(m.file_url)} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+              <img
+                src={mediaUrl(m.file_url)}
+                alt={m.title}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             )}
-            <div style={{ fontSize: 13.5, marginTop: 6, textAlign: 'center' }}>{m.title}</div>
+
+            {m.media_type === 'video' && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 10,
+                  background: 'rgba(0,0,0,0.55)',
+                  color: '#fff',
+                  fontSize: 10.5,
+                  fontWeight: 600,
+                  letterSpacing: 0.4,
+                  padding: '3px 8px',
+                  borderRadius: 20,
+                  pointerEvents: 'none',
+                }}
+              >
+                VIDEO
+              </span>
+            )}
+
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                padding: '28px 12px 10px',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0))',
+                pointerEvents: 'none',
+              }}
+            >
+              <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 600, lineHeight: 1.3 }}>{m.title}</div>
+            </div>
           </div>
         ))}
         {!items && <p style={{ color: 'var(--text-dim)', textAlign: 'center' }}>Loading…</p>}
