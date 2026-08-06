@@ -29,6 +29,13 @@ class SponsorOut(BaseModel):
         from_attributes = True
 
 
+class HomepageVideoOut(BaseModel):
+    video_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class AdminDashboardOut(BaseModel):
     total_students: int
     pending_students: int

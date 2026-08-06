@@ -409,8 +409,17 @@ function AdminMediaPanel() {
         >
           Sponsors
         </button>
+        <button
+          className={subTab === 'hero' ? 'btn btn-brass' : 'btn btn-ghost'}
+          style={{ fontSize: 13, padding: '6px 14px' }}
+          onClick={() => setSubTab('hero')}
+        >
+          Homepage video
+        </button>
       </div>
-      {subTab === 'media' ? <MediaUploadPanel /> : <SponsorUploadPanel />}
+      {subTab === 'media' && <MediaUploadPanel />}
+      {subTab === 'sponsors' && <SponsorUploadPanel />}
+      {subTab === 'hero' && <HomepageVideoPanel />}
     </div>
   );
 }
@@ -521,6 +530,68 @@ function MediaUploadPanel() {
           ))}
         </div>
       </List>
+    </div>
+  );
+}
+
+function HomepageVideoPanel() {
+  const [current, setCurrent] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = () => api.get('/admin/homepage-video/public').then((res) => setCurrent(res.data.video_url)).catch(() => setCurrent(null));
+  useEffect(() => { load(); }, []);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    try {
+      const form = new FormData();
+      form.append('video', file);
+      await api.post('/admin/homepage-video', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setFile(null);
+      load();
+    } catch (err) {
+      setError(err?.response?.data?.detail || 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleClear = async () => {
+    await api.delete('/admin/homepage-video');
+    load();
+  };
+
+  return (
+    <div>
+      <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>
+        Homepage hero background video
+      </h3>
+      <p style={{ fontSize: 12.5, color: 'var(--text-dim)', marginBottom: 12 }}>
+        Blank until you upload one — the homepage falls back to its default image.
+      </p>
+      <form onSubmit={handleUpload} className="card" style={{ padding: 16, display: 'grid', gap: 10, maxWidth: 480, marginBottom: 24 }}>
+        <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files?.[0] || null)} required />
+        {error && <div className="error-banner">{error}</div>}
+        <button className="btn btn-brass" type="submit" disabled={uploading}>
+          {uploading ? 'Uploading…' : current ? 'Replace video' : 'Upload'}
+        </button>
+      </form>
+
+      {current ? (
+        <div style={{ maxWidth: 480 }}>
+          <video src={mediaUrl(current)} controls style={{ width: '100%', borderRadius: 8, marginBottom: 10 }} />
+          <button className="btn btn-ghost" style={{ fontSize: 12.5, padding: '6px 12px' }} onClick={handleClear}>
+            Remove (fall back to image)
+          </button>
+        </div>
+      ) : (
+        <p style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>No video uploaded — currently showing the default image.</p>
+      )}
     </div>
   );
 }

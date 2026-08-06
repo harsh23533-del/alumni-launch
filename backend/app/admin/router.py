@@ -38,6 +38,7 @@ from app.models.models import (
     Notification,
     AdminMedia,
     Sponsor,
+    HomepageVideo,
 )
 from app.schemas.schemas import (
     LoginRequest,
@@ -49,7 +50,7 @@ from app.schemas.schemas import (
     ApplicationOut,
     JobApplicationOut,
 )
-from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut, SponsorOut
+from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut, SponsorOut, HomepageVideoOut
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -438,3 +439,43 @@ def delete_sponsor(sponsor_id: str, db: Session = Depends(get_db), admin: User =
     db.delete(item)
     db.commit()
     return {"message": "deleted"}
+
+
+# ---------- Homepage video ----------
+
+@router.post("/homepage-video", response_model=HomepageVideoOut)
+def upload_homepage_video(
+    video: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    video_url = upload_to_cloudinary(video.file, folder="alumni_launch/homepage", resource_type="video")
+
+    row = db.query(HomepageVideo).first()
+    if row:
+        row.video_url = video_url
+        row.uploaded_by_id = admin.id
+    else:
+        row = HomepageVideo(video_url=video_url, uploaded_by_id=admin.id)
+        db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.get("/homepage-video/public", response_model=HomepageVideoOut)
+def get_homepage_video_public(db: Session = Depends(get_db)):
+    """No auth — blank/null until an admin uploads one."""
+    row = db.query(HomepageVideo).first()
+    if not row:
+        return HomepageVideoOut(video_url=None)
+    return row
+
+
+@router.delete("/homepage-video")
+def delete_homepage_video(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    row = db.query(HomepageVideo).first()
+    if row:
+        db.delete(row)
+        db.commit()
+    return {"message": "cleared"}

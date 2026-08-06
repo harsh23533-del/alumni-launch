@@ -273,6 +273,19 @@ class IdeaGroupMessage(Base):
     sender = relationship("User")
 
 
+class HomepageVideo(Base):
+    """Single-row setting: the looping background video on the homepage hero.
+    Blank/absent until an admin uploads one — the hero falls back to the static image."""
+    __tablename__ = "homepage_video"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    video_url = Column(String, nullable=False)
+    uploaded_by_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    uploaded_by = relationship("User")
+
+
 class DirectMessage(Base):
     """Private 1:1 messages — e.g. an alumni or student messaging an idea's
     author. Only visible to the two people in the conversation."""

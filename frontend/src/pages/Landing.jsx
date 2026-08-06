@@ -5,7 +5,12 @@ import api from '../api/client';
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [heroVideoUrl, setHeroVideoUrl] = useState(null);
   usePageTitle('Home', 'Where alumni startups find their first hires. Browse startups and jobs posted by alumni and companies, and apply directly with your resume.');
+
+  useEffect(() => {
+    api.get('/admin/homepage-video/public').then((res) => setHeroVideoUrl(res.data.video_url)).catch(() => {});
+  }, []);
 
   return (
     <div className="page" style={{ maxWidth: 'none', padding: 0 }}>
@@ -18,19 +23,38 @@ export default function Landing() {
           color: 'var(--paper)',
         }}
       >
-        <img
-          src="/images/hero-campus.webp"
-          alt=""
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 0,
-          }}
-        />
+        {heroVideoUrl ? (
+          <video
+            src={heroVideoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              zIndex: 0,
+            }}
+          />
+        ) : (
+          <img
+            src="/images/hero-campus.webp"
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              zIndex: 0,
+            }}
+          />
+        )}
         <div
           aria-hidden="true"
           style={{
