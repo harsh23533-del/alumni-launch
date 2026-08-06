@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
@@ -6,11 +7,12 @@ import ProfileSummary from './ProfileSummary';
 export default function Topbar() {
   const navigate = useNavigate();
   const { isAuthenticated, role, isAdmin, logout } = useAuth();
+  const [logoPopped, setLogoPopped] = useState(false);
 
   return (
     <div className="topbar">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        <div className="brand" onClick={() => setLogoPopped(true)} style={{ cursor: 'pointer' }}>
           <img src="/logo.png" alt="AlumniLaunch" className="brand-seal" style={{ objectFit: 'cover' }} />
           AlumniLaunch
         </div>
@@ -40,6 +42,49 @@ export default function Topbar() {
           </>
         )}
       </div>
+
+      {logoPopped && (
+        <div
+          onClick={() => setLogoPopped(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999,
+            background: 'rgba(0,0,0,0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'zoom-out',
+            animation: 'logoBackdropIn 0.15s ease-out',
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="AlumniLaunch"
+            onClick={(e) => { e.stopPropagation(); navigate('/'); setLogoPopped(false); }}
+            style={{
+              width: 'min(260px, 60vw)',
+              height: 'min(260px, 60vw)',
+              objectFit: 'cover',
+              borderRadius: '50%',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              cursor: 'pointer',
+              animation: 'logoPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          />
+          <style>{`
+            @keyframes logoPop {
+              0%   { transform: scale(0.2); opacity: 0; }
+              60%  { transform: scale(1.08); opacity: 1; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes logoBackdropIn {
+              from { opacity: 0; }
+              to   { opacity: 1; }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }
