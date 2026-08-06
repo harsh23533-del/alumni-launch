@@ -37,6 +37,7 @@ from app.models.models import (
     ChatMessage,
     Notification,
     AdminMedia,
+    Sponsor,
 )
 from app.schemas.schemas import (
     LoginRequest,
@@ -48,7 +49,7 @@ from app.schemas.schemas import (
     ApplicationOut,
     JobApplicationOut,
 )
-from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut
+from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut, SponsorOut
 from app.utils.notify import notify_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -343,6 +344,8 @@ def upload_media(
     title: str = Form(...),
     media_type: str = Form(...),
     file: UploadFile = File(...),
+    description: str = Form(None),
+    link_url: str = Form(None),
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
@@ -355,6 +358,8 @@ def upload_media(
         title=title,
         media_type=media_type,
         file_url=file_url,
+        description=description,
+        link_url=link_url,
         uploaded_by_id=admin.id,
     )
     db.add(item)
@@ -383,6 +388,53 @@ def delete_media(media_id: str, db: Session = Depends(get_db), admin: User = Dep
         os.remove(item.file_url.lstrip("/"))
     except OSError:
         pass
+    db.delete(item)
+    db.commit()
+    return {"message": "deleted"}
+
+
+# ---------- Sponsors ----------
+
+@router.post("/sponsors", response_model=SponsorOut)
+def upload_sponsor(
+    name: str = Form(...),
+    poster: UploadFile = File(...),
+    description: str = Form(None),
+    link_url: str = Form(None),
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    poster_url = upload_to_cloudinary(poster.file, folder="alumni_launch/sponsors", resource_type="image")
+
+    item = Sponsor(
+        name=name,
+        poster_url=poster_url,
+        description=description,
+        link_url=link_url,
+        uploaded_by_id=admin.id,
+    )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.get("/sponsors/public", response_model=List[SponsorOut])
+def list_sponsors_public(db: Session = Depends(get_db)):
+    """No auth — public sponsors section reads from here."""
+    return db.query(Sponsor).order_by(Sponsor.created_at.desc()).all()
+
+
+@router.get("/sponsors", response_model=List[SponsorOut])
+def list_sponsors(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    return db.query(Sponsor).order_by(Sponsor.created_at.desc()).all()
+
+
+@router.delete("/sponsors/{sponsor_id}")
+def delete_sponsor(sponsor_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    item = db.query(Sponsor).filter(Sponsor.id == sponsor_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Not found")
     db.delete(item)
     db.commit()
     return {"message": "deleted"}

@@ -21,6 +21,7 @@ import PostJob from './pages/PostJob';
 import JobsDashboard from './pages/JobsDashboard';
 import Chat from './pages/Chat';
 import Ideas from './pages/Ideas';
+import Sponsors from './pages/Sponsors';
 import Messages from './pages/Messages';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/startups" element={<BrowseStartups />} />
           <Route path="/jobs" element={<BrowseJobs />} />
           <Route path="/ideas" element={<Ideas />} />
+          <Route path="/sponsors" element={<Sponsors />} />
 
           <Route path="/messages" element={
             <ProtectedRoute><Messages /></ProtectedRoute>

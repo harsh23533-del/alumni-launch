@@ -390,9 +390,37 @@ function mediaUrl(path) {
 }
 
 function AdminMediaPanel() {
+  const [subTab, setSubTab] = useState('media');
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+        <button
+          className={subTab === 'media' ? 'btn btn-brass' : 'btn btn-ghost'}
+          style={{ fontSize: 13, padding: '6px 14px' }}
+          onClick={() => setSubTab('media')}
+        >
+          Media
+        </button>
+        <button
+          className={subTab === 'sponsors' ? 'btn btn-brass' : 'btn btn-ghost'}
+          style={{ fontSize: 13, padding: '6px 14px' }}
+          onClick={() => setSubTab('sponsors')}
+        >
+          Sponsors
+        </button>
+      </div>
+      {subTab === 'media' ? <MediaUploadPanel /> : <SponsorUploadPanel />}
+    </div>
+  );
+}
+
+function MediaUploadPanel() {
   const [items, setItems] = useState(null);
   const [title, setTitle] = useState('');
   const [mediaType, setMediaType] = useState('image');
+  const [description, setDescription] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -410,8 +438,12 @@ function AdminMediaPanel() {
       form.append('title', title);
       form.append('media_type', mediaType);
       form.append('file', file);
+      if (description) form.append('description', description);
+      if (linkUrl) form.append('link_url', linkUrl);
       await api.post('/admin/media', form, { headers: { 'Content-Type': 'multipart/form-data' } });
       setTitle('');
+      setDescription('');
+      setLinkUrl('');
       setFile(null);
       load();
     } catch (err) {
@@ -448,6 +480,17 @@ function AdminMediaPanel() {
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           required
         />
+        <textarea
+          placeholder="Description (optional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={2}
+        />
+        <input
+          placeholder="Website link (optional) — e.g. https://example.com"
+          value={linkUrl}
+          onChange={(e) => setLinkUrl(e.target.value)}
+        />
         {error && <div className="error-banner">{error}</div>}
         <button className="btn btn-brass" type="submit" disabled={uploading}>
           {uploading ? 'Uploading…' : 'Upload'}
@@ -465,7 +508,101 @@ function AdminMediaPanel() {
                 <img src={mediaUrl(m.file_url)} alt={m.title} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
               )}
               <div style={{ fontSize: 13.5, marginTop: 6 }}>{m.title}</div>
-              <button className="btn btn-ghost" style={{ fontSize: 12, padding: '4px 10px', marginTop: 6 }} onClick={() => handleDelete(m.id)}>
+              {m.description && <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2 }}>{m.description}</div>}
+              {m.link_url && (
+                <a href={m.link_url} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--brass)' }}>
+                  Visit link
+                </a>
+              )}
+              <button className="btn btn-ghost" style={{ fontSize: 12, padding: '4px 10px', marginTop: 6, display: 'block' }} onClick={() => handleDelete(m.id)}>
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      </List>
+    </div>
+  );
+}
+
+function SponsorUploadPanel() {
+  const [items, setItems] = useState(null);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
+  const [poster, setPoster] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = () => api.get('/admin/sponsors').then((res) => setItems(res.data)).catch(() => setItems([]));
+  useEffect(() => { load(); }, []);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!poster || !name.trim()) return;
+    setUploading(true);
+    setError('');
+    try {
+      const form = new FormData();
+      form.append('name', name);
+      form.append('poster', poster);
+      if (description) form.append('description', description);
+      if (linkUrl) form.append('link_url', linkUrl);
+      await api.post('/admin/sponsors', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setName('');
+      setDescription('');
+      setLinkUrl('');
+      setPoster(null);
+      load();
+    } catch (err) {
+      setError(err?.response?.data?.detail || 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    await api.delete(`/admin/sponsors/${id}`);
+    load();
+  };
+
+  return (
+    <div>
+      <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>Add a sponsor</h3>
+      <form onSubmit={handleUpload} className="card" style={{ padding: 16, display: 'grid', gap: 10, maxWidth: 480, marginBottom: 24 }}>
+        <input placeholder="Sponsor name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <input type="file" accept="image/*" onChange={(e) => setPoster(e.target.files?.[0] || null)} required />
+        <textarea
+          placeholder="Description (optional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={2}
+        />
+        <input
+          placeholder="Website link (optional) — e.g. https://example.com"
+          value={linkUrl}
+          onChange={(e) => setLinkUrl(e.target.value)}
+        />
+        {error && <div className="error-banner">{error}</div>}
+        <button className="btn btn-brass" type="submit" disabled={uploading}>
+          {uploading ? 'Uploading…' : 'Add sponsor'}
+        </button>
+      </form>
+
+      <h3 style={{ fontSize: 15, margin: '4px 0 10px', color: 'var(--text-dim)' }}>Sponsors</h3>
+      <List loading={!items} empty={items && items.length === 0} emptyText="No sponsors yet.">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14 }}>
+          {items?.map((s) => (
+            <div key={s.id} className="card" style={{ padding: 10 }}>
+              <img src={mediaUrl(s.poster_url)} alt={s.name} style={{ width: '100%', borderRadius: 6, objectFit: 'cover', aspectRatio: '4/3' }} />
+              <div style={{ fontSize: 13.5, marginTop: 6 }}>{s.name}</div>
+              {s.description && <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2 }}>{s.description}</div>}
+              {s.link_url && (
+                <a href={s.link_url} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--brass)' }}>
+                  Visit link
+                </a>
+              )}
+              <button className="btn btn-ghost" style={{ fontSize: 12, padding: '4px 10px', marginTop: 6, display: 'block' }} onClick={() => handleDelete(s.id)}>
                 Delete
               </button>
             </div>

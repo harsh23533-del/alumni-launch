@@ -9,6 +9,20 @@ class AdminMediaOut(BaseModel):
     title: str
     media_type: str
     file_url: str
+    description: Optional[str] = None
+    link_url: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SponsorOut(BaseModel):
+    id: str
+    name: str
+    poster_url: str
+    description: Optional[str] = None
+    link_url: Optional[str] = None
     created_at: datetime
 
     class Config:

@@ -50,6 +50,11 @@ const icons = {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" />
     </svg>
   ),
+  sponsor: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9 12 2" />
+    </svg>
+  ),
 };
 
 function buildTabs({ isAuthenticated, role, isAdmin }) {
@@ -58,6 +63,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'startups', label: 'Startups', icon: 'browse', path: '/startups' },
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+      { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat' },
       { id: 'login', label: 'Log in', icon: 'profile', path: '/login' },
     ];
@@ -75,6 +81,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'dashboard', label: 'My startups', icon: 'browse', path: '/alumni/dashboard' },
       { id: 'post', label: 'Post', icon: 'post', path: '/alumni/post' },
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+      { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
       { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
@@ -85,6 +92,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'jobs', label: 'Jobs', icon: 'browse', path: '/jobs' },
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+      { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
       { id: 'applications', label: 'Applied', icon: 'post', path: '/student/applications' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
@@ -97,6 +105,7 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     { id: 'dashboard', label: 'My jobs', icon: 'browse', path: '/jobs/dashboard' },
     { id: 'post', label: 'Post', icon: 'post', path: '/jobs/post' },
     { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
+    { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
     { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
     { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
     { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
