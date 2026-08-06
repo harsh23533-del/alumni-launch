@@ -63,6 +63,13 @@ export default function Messages() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [thread]);
 
+  const respondToJoin = async (requestId, action) => {
+    await api.post(`/ideas/join-requests/${requestId}/${action}`);
+    const convs = await loadConversations();
+    setActive((prev) => (prev ? { ...prev, pending_join_request_id: null } : prev));
+    return convs;
+  };
+
   const send = async (e) => {
     e.preventDefault();
     if (!text.trim() || !active) return;
@@ -120,7 +127,12 @@ export default function Messages() {
                   </span>
                 )}
               </div>
-              {c.idea_title && <div style={{ fontSize: 11.5, color: 'var(--text-dim)' }}>re: {c.idea_title}</div>}
+              {c.pending_join_request_id && (
+                <div style={{ fontSize: 11, color: 'var(--teal, #2dd4bf)', fontWeight: 700, marginTop: 2 }}>
+                  Asked to join{c.idea_title ? `: ${c.idea_title}` : ''}
+                </div>
+              )}
+              {c.idea_title && !c.pending_join_request_id && <div style={{ fontSize: 11.5, color: 'var(--text-dim)' }}>re: {c.idea_title}</div>}
               <div style={{ fontSize: 12.5, color: 'var(--text-dim)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {c.last_message}
               </div>
@@ -139,6 +151,22 @@ export default function Messages() {
                 <strong>{active.other_user_name}</strong>
                 {active.idea_title && <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>re: {active.idea_title}</div>}
               </div>
+
+              {active.pending_join_request_id && (
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  background: 'rgba(45, 212, 191, 0.08)', border: '1px solid var(--teal, #2dd4bf)',
+                  borderRadius: 10, padding: '10px 14px', marginBottom: 12,
+                }}>
+                  <span style={{ fontSize: 13.5 }}>
+                    <strong>{active.other_user_name}</strong> asked to join{active.idea_title ? ` "${active.idea_title}"` : ' this idea'}
+                  </span>
+                  <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 10 }}>
+                    <button className="btn btn-brass" style={{ padding: '5px 12px', fontSize: 12.5 }} onClick={() => respondToJoin(active.pending_join_request_id, 'accept')}>Approve</button>
+                    <button className="btn btn-ghost" style={{ padding: '5px 12px', fontSize: 12.5 }} onClick={() => respondToJoin(active.pending_join_request_id, 'reject')}>Reject</button>
+                  </div>
+                </div>
+              )}
 
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
                 {thread.map((m) => {

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user
-from app.models.models import DirectMessage, Idea, User
+from app.models.models import DirectMessage, Idea, IdeaJoinRequest, IdeaJoinRequestStatus, User
 from app.schemas.schemas import DirectMessageCreate, DirectMessageOut, ConversationOut
 from app.utils.notify import notify_user
 
@@ -89,6 +89,19 @@ def list_conversations(db: Session = Depends(get_db), user: User = Depends(get_c
             )
             .count()
         )
+        pending_request_id = None
+        if m.idea_id and m.idea and m.idea.student and m.idea.student.user_id == user.id:
+            pending = (
+                db.query(IdeaJoinRequest)
+                .filter(
+                    IdeaJoinRequest.idea_id == m.idea_id,
+                    IdeaJoinRequest.requester_id == other_id,
+                    IdeaJoinRequest.status == IdeaJoinRequestStatus.pending,
+                )
+                .first()
+            )
+            if pending:
+                pending_request_id = pending.id
         seen[other_id] = ConversationOut(
             other_user_id=other.id,
             other_user_name=_display_name(other),
@@ -98,6 +111,7 @@ def list_conversations(db: Session = Depends(get_db), user: User = Depends(get_c
             last_message=m.content,
             last_message_at=m.created_at,
             unread_count=unread,
+            pending_join_request_id=pending_request_id,
         )
     return list(seen.values())
 

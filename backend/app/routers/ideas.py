@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_student, require_rater
-from app.models.models import Idea, IdeaRating, IdeaJoinRequest, IdeaJoinRequestStatus, IdeaGroupMessage, StudentProfile, User
+from app.models.models import Idea, IdeaRating, IdeaJoinRequest, IdeaJoinRequestStatus, IdeaGroupMessage, StudentProfile, User, DirectMessage
 from app.schemas.schemas import (
     IdeaOut, IdeaRatingCreate, IdeaRatingOut,
     IdeaJoinRequestCreate, IdeaJoinRequestOut,
@@ -195,12 +195,20 @@ def request_to_join(
         db.commit()
         db.refresh(req)
 
+    db.add(DirectMessage(
+        sender_id=user.id,
+        receiver_id=idea.student.user_id,
+        idea_id=idea.id,
+        content=payload.message or f"Hi! I'd like to join your idea \"{idea.title}\".",
+    ))
+    db.commit()
+
     notify_user(
         db,
         user_id=idea.student.user_id,
         title="New join request",
         message=f"{_display_name(user)} wants to join your idea: {idea.title}",
-        link=f"/ideas?open={idea.id}",
+        link="/messages",
     )
 
     out = IdeaJoinRequestOut.model_validate(req)
