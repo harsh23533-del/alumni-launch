@@ -332,7 +332,7 @@ body {
 @media (max-width: 768px) {
   body { padding-bottom: 64px; }
 
-  .topbar .nav-links { display: none; }
+  .topbar .nav-links { display: none !important; }
 
   .mobile-bottom-nav {
     display: flex;
@@ -347,7 +347,13 @@ body {
     border-top: 1px solid var(--line);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+
+  .mobile-bottom-nav::-webkit-scrollbar { display: none; }
 
   .mobile-nav-item {
     display: flex;
@@ -361,6 +367,8 @@ body {
     padding: 6px 10px;
     border-radius: 10px;
     transition: color 0.16s ease, background-color 0.16s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .mobile-nav-item:hover { color: var(--ink); }
