@@ -116,16 +116,6 @@ export default function Ideas() {
     const res = await api.get('/ideas');
     setIdeas(res.data);
     setLoading(false);
-
-    const openId = searchParams.get('open');
-    if (openId) {
-      const match = res.data.find((i) => i.id === openId);
-      if (match) setOpenIdea(match);
-      setSearchParams((prev) => {
-        prev.delete('open');
-        return prev;
-      }, { replace: true });
-    }
   };
 
   const loadMyGroups = async () => {
@@ -135,6 +125,21 @@ export default function Ideas() {
   };
 
   useEffect(() => { load(); loadMyGroups(); /* eslint-disable-next-line */ }, []);
+
+  useEffect(() => {
+    const openId = searchParams.get('open');
+    if (!openId) return;
+    api.get(`/ideas/${openId}`)
+      .then((res) => setOpenIdea(res.data))
+      .catch(() => {})
+      .finally(() => {
+        setSearchParams((prev) => {
+          prev.delete('open');
+          return prev;
+        }, { replace: true });
+      });
+    // eslint-disable-next-line
+  }, [searchParams]);
 
   const submitIdea = async (e) => {
     e.preventDefault();
