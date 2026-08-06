@@ -2,6 +2,17 @@ import { useEffect, useState } from 'react';
 import api from '../../api/client';
 import Chat from '../Chat';
 
+// Render's free tier spins the backend down after inactivity; the first
+// request after that can take 50s+ to wake it up. If that wake-up (or a big
+// video) blows past the platform's proxy timeout, the browser gets a plain
+// network error with no response body — so err.response is undefined here,
+// not a real "upload failed" from our code. Tell the user to just retry.
+const friendlyUploadError = (err) =>
+  err?.response?.data?.detail ||
+  (err?.response
+    ? 'Upload failed.'
+    : 'Server may still be waking up (free tier can take ~50s). Please try again.');
+
 const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications', 'Media', 'Chat'];
 
 export default function AdminDashboard() {
@@ -458,7 +469,7 @@ function MediaUploadPanel() {
       setFile(null);
       load();
     } catch (err) {
-      setError(err?.response?.data?.detail || 'Upload failed.');
+      setError(friendlyUploadError(err));
     } finally {
       setUploading(false);
     }
@@ -557,7 +568,7 @@ function HomepageVideoPanel() {
       setFile(null);
       load();
     } catch (err) {
-      setError(err?.response?.data?.detail || 'Upload failed.');
+      setError(friendlyUploadError(err));
     } finally {
       setUploading(false);
     }
@@ -628,7 +639,7 @@ function SponsorUploadPanel() {
       setPoster(null);
       load();
     } catch (err) {
-      setError(err?.response?.data?.detail || 'Upload failed.');
+      setError(friendlyUploadError(err));
     } finally {
       setUploading(false);
     }
