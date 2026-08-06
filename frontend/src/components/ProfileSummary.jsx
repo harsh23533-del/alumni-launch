@@ -9,6 +9,36 @@ function displayName(role, profile) {
   return profile.name;
 }
 
+function roleLinks(role) {
+  if (role === 'alumni') {
+    return [
+      { label: 'My startups', path: '/alumni/dashboard' },
+      { label: 'Post a startup', path: '/alumni/post' },
+      { label: 'My jobs', path: '/jobs/dashboard' },
+      { label: 'Post a job', path: '/jobs/post' },
+      { label: 'Ideas', path: '/ideas' },
+      { label: 'Chat', path: '/chat' },
+    ];
+  }
+  if (role === 'student') {
+    return [
+      { label: 'Jobs', path: '/jobs' },
+      { label: 'Ideas', path: '/ideas' },
+      { label: 'My applications', path: '/student/applications' },
+      { label: 'Chat', path: '/chat' },
+    ];
+  }
+  if (role === 'company') {
+    return [
+      { label: 'My jobs', path: '/jobs/dashboard' },
+      { label: 'Post a job', path: '/jobs/post' },
+      { label: 'Ideas', path: '/ideas' },
+      { label: 'Chat', path: '/chat' },
+    ];
+  }
+  return [];
+}
+
 export default function ProfileSummary() {
   const { role, logout } = useAuth();
   const navigate = useNavigate();
@@ -76,6 +106,16 @@ export default function ProfileSummary() {
           >
             Messages
           </button>
+          {roleLinks(role).map((l) => (
+            <button
+              key={l.path}
+              className="btn btn-ghost"
+              style={{ width: '100%', marginBottom: 8 }}
+              onClick={() => { setOpen(false); navigate(l.path); }}
+            >
+              {l.label}
+            </button>
+          ))}
           <button
             className="btn btn-ghost"
             style={{ width: '100%' }}
