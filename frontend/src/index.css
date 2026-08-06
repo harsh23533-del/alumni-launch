@@ -334,6 +334,15 @@ body {
 
   .topbar .nav-links { display: none !important; }
 
+  .notification-dropdown {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: 68px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
   .mobile-bottom-nav {
     display: flex;
     justify-content: space-around;
