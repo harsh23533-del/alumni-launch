@@ -340,6 +340,18 @@ def list_all_job_applications(db: Session = Depends(get_db), admin: User = Depen
     return rows
 
 
+def _normalize_url(url: str) -> str:
+    """A link saved without http(s):// (e.g. 'wa.me/xyz') is a *relative* URL
+    to a browser, so it opens on our own domain instead of the real site.
+    Add https:// automatically unless a scheme is already there."""
+    if not url:
+        return url
+    url = url.strip()
+    if url and not url.lower().startswith(("http://", "https://")):
+        url = f"https://{url}"
+    return url
+
+
 @router.post("/media", response_model=AdminMediaOut)
 def upload_media(
     title: str = Form(...),
@@ -353,14 +365,19 @@ def upload_media(
     if media_type not in ("image", "video"):
         raise HTTPException(status_code=400, detail="media_type must be 'image' or 'video'")
 
-    file_url = upload_to_cloudinary(file.file, folder="alumni_launch/admin_media", resource_type=media_type)
+    try:
+        file_url = upload_to_cloudinary(file.file, folder="alumni_launch/admin_media", resource_type=media_type)
+    except Exception as e:
+        # Surface the real Cloudinary error (bad credentials, file too large for
+        # the plan, unsupported format, etc.) instead of a generic 500.
+        raise HTTPException(status_code=400, detail=f"Upload failed: {e}")
 
     item = AdminMedia(
         title=title,
         media_type=media_type,
         file_url=file_url,
         description=description,
-        link_url=link_url,
+        link_url=_normalize_url(link_url),
         uploaded_by_id=admin.id,
     )
     db.add(item)
@@ -372,7 +389,10 @@ def upload_media(
 @router.get("/media/public", response_model=List[AdminMediaOut])
 def list_media_public(db: Session = Depends(get_db)):
     """No auth — this is what the public homepage gallery reads from."""
-    return db.query(AdminMedia).order_by(AdminMedia.created_at.desc()).all()
+    items = db.query(AdminMedia).order_by(AdminMedia.created_at.desc()).all()
+    for i in items:
+        i.link_url = _normalize_url(i.link_url)
+    return items
 
 
 @router.get("/media", response_model=List[AdminMediaOut])
@@ -411,7 +431,7 @@ def upload_sponsor(
         name=name,
         poster_url=poster_url,
         description=description,
-        link_url=link_url,
+        link_url=_normalize_url(link_url),
         uploaded_by_id=admin.id,
     )
     db.add(item)
@@ -423,7 +443,10 @@ def upload_sponsor(
 @router.get("/sponsors/public", response_model=List[SponsorOut])
 def list_sponsors_public(db: Session = Depends(get_db)):
     """No auth — public sponsors section reads from here."""
-    return db.query(Sponsor).order_by(Sponsor.created_at.desc()).all()
+    items = db.query(Sponsor).order_by(Sponsor.created_at.desc()).all()
+    for i in items:
+        i.link_url = _normalize_url(i.link_url)
+    return items
 
 
 @router.get("/sponsors", response_model=List[SponsorOut])
