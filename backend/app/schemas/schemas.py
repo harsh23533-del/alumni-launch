@@ -386,3 +386,15 @@ class ConversationOut(BaseModel):
     last_message_at: datetime
     unread_count: int = 0
     pending_join_request_id: Optional[str] = None  # set when the other person has an open request to join your idea
+
+
+class ReactionToggleIn(BaseModel):
+    target_type: str  # 'media' | 'sponsor' | 'idea'
+    target_id: str
+    emoji: str
+
+
+class ReactionSummaryItem(BaseModel):
+    emoji: str
+    count: int
+    reacted_by_me: bool

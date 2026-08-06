@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.database import Base, engine, sync_missing_columns
-from app.routers import auth, import_data, startups, applications, profiles, jobs, notifications, chat, ideas, messages
+from app.routers import auth, import_data, startups, applications, profiles, jobs, notifications, chat, ideas, messages, reactions
 from app.admin import router as admin
 
 # Creates tables if they don't exist yet (fine for dev; use Alembic migrations for production)
@@ -56,6 +56,7 @@ app.include_router(notifications.router)
 app.include_router(chat.router)
 app.include_router(ideas.router)
 app.include_router(messages.router)
+app.include_router(reactions.router)
 
 
 @app.get("/")

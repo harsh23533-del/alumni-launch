@@ -4,6 +4,7 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
 import IdeaGroupPanel from '../components/IdeaGroupPanel';
+import ReactionBar from '../components/ReactionBar';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const fileUrl = (path) => {
@@ -295,6 +296,9 @@ export default function Ideas() {
                   </span>
                   {idea.voice_note_url && <span style={{ fontSize: 12.5 }}>🎙️ voice pitch available</span>}
                   {idea.document_url && <span style={{ fontSize: 12.5 }}>📄 document attached</span>}
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <ReactionBar targetType="idea" targetId={idea.id} />
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>

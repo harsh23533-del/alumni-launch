@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import usePageTitle from '../hooks/usePageTitle';
 import api from '../api/client';
+import ReactionBar from '../components/ReactionBar';
 
 export default function Sponsors() {
   usePageTitle('Sponsors', 'Organizations supporting AlumniLaunch.');
@@ -38,11 +39,12 @@ export default function Sponsors() {
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-ghost"
-                style={{ display: 'inline-block', fontSize: 12.5, padding: '6px 12px' }}
+                style={{ display: 'inline-block', fontSize: 12.5, padding: '6px 12px', marginBottom: 10 }}
               >
                 Visit website
               </a>
             )}
+            <ReactionBar targetType="sponsor" targetId={s.id} />
           </div>
         ))}
       </div>

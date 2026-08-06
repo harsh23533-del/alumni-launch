@@ -9,6 +9,24 @@ from app.core.security import decode_access_token, is_admin_email
 from app.models.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
+
+
+def get_current_user_optional(
+    token: Optional[str] = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)
+) -> Optional[User]:
+    """Like get_current_user but returns None instead of 401 when logged out —
+    for public pages (media/sponsors gallery) that still want to show
+    'reacted_by_me' state when a token happens to be present."""
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if payload is None:
+        return None
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    return db.query(User).filter(User.id == user_id).first()
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:

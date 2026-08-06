@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import (
-    Boolean, Column, DateTime, Enum, ForeignKey, Integer, String, Text
+    Boolean, Column, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -359,6 +359,26 @@ class Notification(Base):
     message = Column(Text, nullable=True)
     link = Column(String, nullable=True)  # frontend route to navigate to on click
     is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+
+
+class Reaction(Base):
+    """A free-choice emoji reaction (whatever's on the reactor's own keyboard)
+    from a user on a media item, sponsor, or idea. One row per unique
+    user+target+emoji so the same user can stack several different emoji on
+    one item, but can't double-count the same one."""
+    __tablename__ = "reactions"
+    __table_args__ = (
+        UniqueConstraint("target_type", "target_id", "user_id", "emoji", name="uq_reaction"),
+    )
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    target_type = Column(String, nullable=False)  # 'media' | 'sponsor' | 'idea'
+    target_id = Column(UUID(as_uuid=False), nullable=False)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    emoji = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User")

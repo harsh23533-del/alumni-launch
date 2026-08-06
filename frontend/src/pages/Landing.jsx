@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import usePageTitle from '../hooks/usePageTitle';
 import api from '../api/client';
+import ReactionBar from '../components/ReactionBar';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -246,7 +247,10 @@ function MediaGallery() {
                 pointerEvents: 'none',
               }}
             >
-              <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 600, lineHeight: 1.3 }}>{m.title}</div>
+              <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 600, lineHeight: 1.3, marginBottom: 6 }}>{m.title}</div>
+              <div style={{ pointerEvents: 'auto', color: '#fff' }}>
+                <ReactionBar targetType="media" targetId={m.id} />
+              </div>
             </div>
           </div>
         ))}
