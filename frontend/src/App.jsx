@@ -22,6 +22,7 @@ import JobsDashboard from './pages/JobsDashboard';
 import Chat from './pages/Chat';
 import Ideas from './pages/Ideas';
 import Sponsors from './pages/Sponsors';
+import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/jobs" element={<BrowseJobs />} />
           <Route path="/ideas" element={<Ideas />} />
           <Route path="/sponsors" element={<Sponsors />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
           <Route path="/messages" element={
             <ProtectedRoute><Messages /></ProtectedRoute>

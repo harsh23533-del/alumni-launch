@@ -102,6 +102,13 @@ export default function ProfileSummary() {
           <button
             className="btn btn-ghost"
             style={{ width: '100%', marginBottom: 8 }}
+            onClick={() => { setOpen(false); navigate('/profile'); }}
+          >
+            My profile
+          </button>
+          <button
+            className="btn btn-ghost"
+            style={{ width: '100%', marginBottom: 8 }}
             onClick={() => { setOpen(false); navigate('/messages'); }}
           >
             Messages
