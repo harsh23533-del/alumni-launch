@@ -11,7 +11,7 @@ export default function Topbar() {
     <div className="topbar">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <span className="brand-seal">A</span>
+          <img src="/logo.png" alt="AlumniLaunch" className="brand-seal" style={{ objectFit: 'cover' }} />
           AlumniLaunch
         </div>
         {isAuthenticated && !isAdmin && <ProfileSummary />}
