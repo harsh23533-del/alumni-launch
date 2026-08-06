@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import usePageTitle from '../hooks/usePageTitle';
@@ -92,6 +92,7 @@ export default function Ideas() {
   usePageTitle('Student Ideas', 'Browse ideas pitched by students — rate them and connect directly.');
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -115,6 +116,16 @@ export default function Ideas() {
     const res = await api.get('/ideas');
     setIdeas(res.data);
     setLoading(false);
+
+    const openId = searchParams.get('open');
+    if (openId) {
+      const match = res.data.find((i) => i.id === openId);
+      if (match) setOpenIdea(match);
+      setSearchParams((prev) => {
+        prev.delete('open');
+        return prev;
+      }, { replace: true });
+    }
   };
 
   const loadMyGroups = async () => {

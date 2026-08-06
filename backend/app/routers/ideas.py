@@ -200,7 +200,7 @@ def request_to_join(
         user_id=idea.student.user_id,
         title="New join request",
         message=f"{_display_name(user)} wants to join your idea: {idea.title}",
-        link="/ideas",
+        link=f"/ideas?open={idea.id}",
     )
 
     out = IdeaJoinRequestOut.model_validate(req)
@@ -244,7 +244,7 @@ def accept_join_request(request_id: str, db: Session = Depends(get_db), user: Us
         user_id=req.requester_id,
         title="Join request accepted",
         message=f"You're now part of the group for: {req.idea.title}",
-        link="/ideas",
+        link=f"/ideas?open={req.idea.id}",
     )
 
     out = IdeaJoinRequestOut.model_validate(req)
