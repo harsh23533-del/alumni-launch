@@ -359,3 +359,31 @@ def my_groups(db: Session = Depends(get_db), user: User = Depends(require_studen
         item.member_count = counts.get(idea.id, 0)
         out.append(item)
     return out
+
+
+@router.get("/groups/all", response_model=List[IdeaOut])
+def all_groups(db: Session = Depends(get_db)):
+    """Public directory of every active group on the platform — any idea that
+    has at least one accepted member. Anyone can browse (no auth required),
+    same as the ideas listing itself."""
+    accepted = db.query(IdeaJoinRequest).filter(
+        IdeaJoinRequest.status == IdeaJoinRequestStatus.accepted
+    ).all()
+    counts = {}
+    for r in accepted:
+        counts[r.idea_id] = counts.get(r.idea_id, 0) + 1
+
+    if not counts:
+        return []
+
+    ideas = db.query(Idea).filter(Idea.id.in_(counts.keys()), Idea.is_active == True).order_by(  # noqa: E712
+        Idea.created_at.desc()
+    ).all()
+    out = []
+    for idea in ideas:
+        item = IdeaOut.model_validate(idea)
+        item.student_name = idea.student.name if idea.student else None
+        item.student_user_id = idea.student.user_id if idea.student else None
+        item.member_count = counts.get(idea.id, 0)
+        out.append(item)
+    return out

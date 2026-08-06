@@ -15,6 +15,7 @@ export default function Topbar() {
           AlumniLaunch
         </div>
         {isAuthenticated && !isAdmin && <ProfileSummary />}
+        {isAuthenticated && !isAdmin && <NotificationBell />}
       </div>
       <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {!isAuthenticated && (
@@ -29,7 +30,6 @@ export default function Topbar() {
         {isAuthenticated && !isAdmin && (
           <>
             <button onClick={() => navigate('/startups')}>Browse startups</button>
-            <NotificationBell />
             <button onClick={() => { logout(); navigate('/'); }}>Log out</button>
           </>
         )}
