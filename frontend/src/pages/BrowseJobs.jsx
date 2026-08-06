@@ -14,6 +14,7 @@ export default function BrowseJobs() {
   const [typeFilter, setTypeFilter] = useState('');
   const [applyingTo, setApplyingTo] = useState(null);
   const [message, setMessage] = useState('');
+  const [resumeFile, setResumeFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [appliedIds, setAppliedIds] = useState(new Set());
   const [applySuccess, setApplySuccess] = useState('');
@@ -39,6 +40,7 @@ export default function BrowseJobs() {
     setApplyError('');
     setApplySuccess('');
     setMessage('I would love to be considered for this role!');
+    setResumeFile(null);
     setApplyingTo(job);
   };
 
@@ -47,7 +49,11 @@ export default function BrowseJobs() {
     setSubmitting(true);
     setApplyError('');
     try {
-      await api.post('/jobs/apply', { job_id: applyingTo.id, message });
+      const formData = new FormData();
+      formData.append('job_id', applyingTo.id);
+      formData.append('message', message);
+      if (resumeFile) formData.append('resume', resumeFile);
+      await api.post('/jobs/apply', formData);
       setApplySuccess('Application sent! You can track its status from My applications.');
       setAppliedIds((prev) => new Set(prev).add(applyingTo.id));
       setApplyingTo(null);
@@ -127,6 +133,20 @@ export default function BrowseJobs() {
               <div className="field">
                 <label htmlFor="message">Message</label>
                 <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} />
+              </div>
+              <div className="field">
+                <label htmlFor="resume">Resume (optional)</label>
+                <input
+                  id="resume"
+                  type="file"
+                  onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                  style={{ padding: '9px 0', border: 'none' }}
+                />
+                <p style={{ color: 'var(--text-dim)', fontSize: 12.5, marginTop: 4 }}>
+                  {resumeFile
+                    ? `Selected: ${resumeFile.name}`
+                    : 'PDF, screenshot, photo — whatever you have works. Leave blank to use the resume on your profile.'}
+                </p>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button type="button" className="btn btn-ghost" onClick={() => setApplyingTo(null)}>Cancel</button>

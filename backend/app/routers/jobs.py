@@ -1,13 +1,14 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
 from app.core.deps import require_poster, require_student, get_current_user
-from app.models.models import Job, JobApplication, User, JobType, JobApplicationStatus
+from app.models.models import DirectMessage, Job, JobApplication, User, JobType, JobApplicationStatus
 from app.schemas.schemas import (
-    JobCreate, JobOut, JobApplicationCreate, JobApplicationOut, JobApplicationStatusUpdate,
+    JobCreate, JobOut, JobApplicationOut, JobApplicationStatusUpdate,
 )
 from app.utils.notify import notify_admin, broadcast, notify_user
 
@@ -113,29 +114,52 @@ def close_job(job_id: str, db: Session = Depends(get_db), user: User = Depends(r
 # ---------- Applications ----------
 
 @router.post("/apply", response_model=JobApplicationOut)
-def apply_to_job(payload: JobApplicationCreate, db: Session = Depends(get_db), user: User = Depends(require_student)):
-    job = db.query(Job).filter(Job.id == payload.job_id).first()
+async def apply_to_job(
+    job_id: str = Form(...),
+    message: str = Form(None),
+    resume: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(require_student),
+):
+    job = db.query(Job).filter(Job.id == job_id).first()
     if not job or not job.is_active:
         raise HTTPException(status_code=404, detail="Job not found or no longer active")
 
     existing = db.query(JobApplication).filter(
-        JobApplication.job_id == payload.job_id,
+        JobApplication.job_id == job_id,
         JobApplication.student_id == user.student_profile.id,
     ).first()
     if existing:
         raise HTTPException(status_code=400, detail="You've already applied to this job")
 
+    # Default to the resume already on file in the student's profile; a resume
+    # uploaded here (any file type — pdf, screenshot, photo, whatever they have)
+    # overrides it for this one application only.
+    resume_url = user.student_profile.resume_url
+    if resume is not None and resume.filename:
+        resume_url = upload_to_cloudinary(resume.file, folder="alumni_launch/job_resumes", resource_type="auto")
+
     application = JobApplication(
-        job_id=payload.job_id,
+        job_id=job_id,
         student_id=user.student_profile.id,
-        message=payload.message,
-        resume_url=user.student_profile.resume_url,
+        message=message,
+        resume_url=resume_url,
     )
     db.add(application)
     db.commit()
     db.refresh(application)
 
     poster_user_id = job.alumni.user_id if job.alumni_id else job.company.user_id
+
+    # Open a direct-message thread with the poster, same as the Ideas join-request
+    # flow, so they can go back and forth a bit before the poster shortlists/rejects.
+    db.add(DirectMessage(
+        sender_id=user.id,
+        receiver_id=poster_user_id,
+        content=message or f"Hi! I just applied for {job.title}.",
+    ))
+    db.commit()
+
     notify_user(
         db, poster_user_id,
         title="New application received",
@@ -156,7 +180,14 @@ def list_job_applications(job_id: str, db: Session = Depends(get_db), user: User
     if not owns_it:
         raise HTTPException(status_code=403, detail="Not your job posting")
 
-    return db.query(JobApplication).filter(JobApplication.job_id == job_id).all()
+    apps = db.query(JobApplication).filter(JobApplication.job_id == job_id).all()
+    out = []
+    for a in apps:
+        item = JobApplicationOut.model_validate(a)
+        item.student_name = a.student.name if a.student else None
+        item.student_user_id = a.student.user_id if a.student else None
+        out.append(item)
+    return out
 
 
 @router.get("/applications/mine", response_model=List[JobApplicationOut])

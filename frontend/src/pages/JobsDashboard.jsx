@@ -90,14 +90,26 @@ export default function JobsDashboard() {
                 <p style={{ color: 'var(--text-dim)', fontSize: 14 }}>No applications yet.</p>
               )}
               {!appsLoading && applications.map((app) => (
-                <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--line)' }}>
+                <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--line)', gap: 12 }}>
                   <div>
+                    {app.student_name && <div style={{ fontSize: 14.5, fontWeight: 600 }}>{app.student_name}</div>}
                     <div style={{ fontSize: 14.5 }}>{app.message || 'No message provided.'}</div>
-                    {app.resume_url && (
-                      <a href={app.resume_url} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: 'var(--brass)', fontWeight: 600 }}>
-                        View resume
-                      </a>
-                    )}
+                    <div style={{ display: 'flex', gap: 14, marginTop: 4 }}>
+                      {app.resume_url && (
+                        <a href={app.resume_url} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: 'var(--brass)', fontWeight: 600 }}>
+                          View resume
+                        </a>
+                      )}
+                      {app.student_user_id && (
+                        <button
+                          type="button"
+                          onClick={() => navigate('/messages', { state: { toUserId: app.student_user_id, toName: app.student_name } })}
+                          style={{ fontSize: 13, color: 'var(--brass)', fontWeight: 600, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                        >
+                          Message applicant
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <select
                     value={app.status}

@@ -185,6 +185,8 @@ class JobApplicationOut(BaseModel):
     resume_url: Optional[str]
     status: str
     created_at: datetime
+    student_name: Optional[str] = None
+    student_user_id: Optional[str] = None
 
     class Config:
         from_attributes = True
