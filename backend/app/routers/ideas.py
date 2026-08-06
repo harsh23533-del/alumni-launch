@@ -328,3 +328,34 @@ def send_group_message(
     out = IdeaGroupMessageOut.model_validate(msg)
     out.sender_name = _display_name(user)
     return out
+
+
+@router.get("/groups/mine", response_model=List[IdeaOut])
+def my_groups(db: Session = Depends(get_db), user: User = Depends(require_student)):
+    """Ideas that have become an active group for the current student — either
+    ideas they own with at least one accepted member, or ideas they've been
+    accepted into as a member."""
+    owned_idea_ids = {i.id for i in db.query(Idea).filter(Idea.student_id == user.student_profile.id).all()}
+
+    accepted = db.query(IdeaJoinRequest).filter(
+        IdeaJoinRequest.status == IdeaJoinRequestStatus.accepted
+    ).all()
+
+    my_member_idea_ids = {r.idea_id for r in accepted if r.requester_id == user.id}
+    counts = {}
+    for r in accepted:
+        counts[r.idea_id] = counts.get(r.idea_id, 0) + 1
+
+    relevant_ids = {i for i in owned_idea_ids if counts.get(i, 0) > 0} | my_member_idea_ids
+    if not relevant_ids:
+        return []
+
+    ideas = db.query(Idea).filter(Idea.id.in_(relevant_ids)).order_by(Idea.created_at.desc()).all()
+    out = []
+    for idea in ideas:
+        item = IdeaOut.model_validate(idea)
+        item.student_name = idea.student.name if idea.student else None
+        item.student_user_id = idea.student.user_id if idea.student else None
+        item.member_count = counts.get(idea.id, 0)
+        out.append(item)
+    return out

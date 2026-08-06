@@ -108,6 +108,7 @@ export default function Ideas() {
   const [formSuccess, setFormSuccess] = useState('');
 
   const [openIdea, setOpenIdea] = useState(null);
+  const [myGroups, setMyGroups] = useState([]);
 
   const load = async () => {
     setLoading(true);
@@ -116,7 +117,13 @@ export default function Ideas() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  const loadMyGroups = async () => {
+    if (role !== 'student') return;
+    const res = await api.get('/ideas/groups/mine').catch(() => ({ data: [] }));
+    setMyGroups(res.data);
+  };
+
+  useEffect(() => { load(); loadMyGroups(); /* eslint-disable-next-line */ }, []);
 
   const submitIdea = async (e) => {
     e.preventDefault();
@@ -181,6 +188,27 @@ export default function Ideas() {
       </div>
 
       {formSuccess && <div className="success-banner">{formSuccess}</div>}
+
+      {role === 'student' && myGroups.length > 0 && (
+        <div style={{ marginBottom: 28 }}>
+          <h3 style={{ fontSize: 16, marginBottom: 10 }}>My groups</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+            {myGroups.map((g) => (
+              <div
+                key={g.id}
+                className="card"
+                style={{ padding: 14, cursor: 'pointer' }}
+                onClick={() => setOpenIdea(g)}
+              >
+                <div style={{ fontSize: 14.5, fontWeight: 600, marginBottom: 4 }}>{g.title}</div>
+                <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>
+                  {g.member_count} member{g.member_count === 1 ? '' : 's'} · by {g.student_name}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="card" style={{ marginBottom: 24 }}>

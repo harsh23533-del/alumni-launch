@@ -329,6 +329,7 @@ class IdeaOut(BaseModel):
     avg_rating: float = 0
     ratings_count: int = 0
     my_rating: Optional[int] = None  # the current viewer's own rating, if any
+    member_count: int = 0  # accepted group members, only populated on the /ideas/groups/mine endpoint
 
     class Config:
         from_attributes = True
