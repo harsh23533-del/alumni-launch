@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/client';
+import Chat from '../Chat';
 
-const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications', 'Media'];
+const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications', 'Media', 'Chat'];
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('Overview');
@@ -380,6 +381,7 @@ export default function AdminDashboard() {
       )}
 
       {tab === 'Media' && <AdminMediaPanel />}
+      {tab === 'Chat' && <Chat />}
     </div>
   );
 }
