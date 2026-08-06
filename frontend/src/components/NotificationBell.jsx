@@ -105,7 +105,7 @@ export default function NotificationBell() {
                 background: n.is_read ? 'transparent' : 'rgba(201,151,44,0.06)',
               }}
             >
-              <div style={{ fontSize: 13.5, fontWeight: 600 }}>{n.title}</div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--ink, #F5F0E6)' }}>{n.title}</div>
               {n.message && <div style={{ fontSize: 12.5, color: 'var(--text-dim)', marginTop: 2 }}>{n.message}</div>}
             </div>
           ))}
