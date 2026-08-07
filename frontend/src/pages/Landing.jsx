@@ -44,7 +44,7 @@ export default function Landing() {
       <div
         style={{
           position: 'relative',
-          padding: 'clamp(56px, 14vw, 96px) 20px clamp(40px, 10vw, 64px)',
+          padding: 'clamp(90px, 20vw, 140px) 20px clamp(40px, 10vw, 64px)',
           textAlign: 'center',
           overflow: 'hidden',
           color: 'var(--paper)',
