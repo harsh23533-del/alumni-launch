@@ -119,6 +119,42 @@ body {
   margin: 0 auto;
 }
 
+@media (min-width: 769px) {
+  .topbar {
+    max-width: none;
+    width: 100%;
+    padding: 18px 40px;
+    background: linear-gradient(180deg, rgba(20, 20, 32, 0.92), rgba(14, 14, 22, 0.85));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .topbar-icon-row,
+  .desktop-icon-nav {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .desktop-icon-nav button {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .desktop-icon-nav button:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .topbar .nav-links button:not(.btn) {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .topbar .nav-links button:not(.btn):hover {
+    color: #fff;
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;
