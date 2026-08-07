@@ -345,7 +345,7 @@ body {
 
   .mobile-bottom-nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     position: fixed;
     bottom: 0;
@@ -355,14 +355,9 @@ body {
     background: var(--paper-raised);
     border-top: 1px solid var(--line);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
   }
-
-  .mobile-bottom-nav::-webkit-scrollbar { display: none; }
 
   .mobile-nav-item {
     display: flex;
@@ -373,11 +368,11 @@ body {
     border: none;
     cursor: pointer;
     color: var(--text-dim);
-    padding: 6px 10px;
+    padding: 6px 2px;
     border-radius: 10px;
     transition: color 0.16s ease, background-color 0.16s ease;
-    flex-shrink: 0;
-    white-space: nowrap;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   .mobile-nav-item:hover { color: var(--ink); }
@@ -397,9 +392,13 @@ body {
   }
 
   .mobile-nav-label {
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.01em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mobile-nav-badge {

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export default function NotificationBell() {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -91,6 +93,17 @@ export default function NotificationBell() {
               </button>
             )}
           </div>
+          {role === 'student' && (
+            <div
+              onClick={() => { setOpen(false); navigate('/student/applications'); }}
+              style={{
+                padding: '10px 14px', borderBottom: '1px solid var(--line)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, fontWeight: 600,
+              }}
+            >
+              📄 My applications
+            </div>
+          )}
           {notifications.length === 0 && (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-dim)', fontSize: 13.5 }}>
               No notifications yet.

@@ -17,7 +17,17 @@ export default function Topbar() {
           AlumniLaunch
         </div>
         {isAuthenticated && !isAdmin && <ProfileSummary />}
-        {isAuthenticated && !isAdmin && <NotificationBell />}
+        {isAuthenticated && <NotificationBell />}
+        {isAuthenticated && (
+          <button
+            onClick={() => { logout(); navigate('/'); }}
+            aria-label="Log out"
+            title="Log out"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 19, padding: '6px 4px', lineHeight: 1 }}
+          >
+            🚪
+          </button>
+        )}
       </div>
       <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {!isAuthenticated && (

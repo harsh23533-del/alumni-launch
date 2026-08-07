@@ -79,7 +79,6 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'admin', label: 'Admin', icon: 'admin', path: '/admin/dashboard' },
-      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   if (role === 'alumni') {
@@ -92,7 +91,6 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
-      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   if (role === 'student') {
@@ -102,10 +100,8 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
       { id: 'groups', label: 'Groups', icon: 'groups', path: '/groups' },
       { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
-      { id: 'applications', label: 'Applied', icon: 'post', path: '/student/applications' },
       { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
       { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
-      { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
     ];
   }
   // company
@@ -118,7 +114,6 @@ function buildTabs({ isAuthenticated, role, isAdmin }) {
     { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
     { id: 'messages', label: 'Messages', icon: 'mail', path: '/messages' },
     { id: 'chat', label: 'Chat', icon: 'chat', path: '/chat', badge: true },
-    { id: 'logout', label: 'Log out', icon: 'logout', action: 'logout' },
   ];
 }
 
