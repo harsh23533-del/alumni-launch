@@ -99,6 +99,18 @@ export default function ProfileSummary() {
           <p style={{ color: 'var(--text-dim)', fontSize: 12.5, textTransform: 'capitalize', marginBottom: 12 }}>
             {role}
           </p>
+
+          <div className="profile-summary-full-info">
+            {profile && Object.entries(profile).map(([key, value]) => {
+              if (['id', 'user_id', 'resume_url', 'name', 'company_name'].includes(key) || value == null || typeof value === 'object') return null;
+              return (
+                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: '5px 0', borderBottom: '1px solid var(--line)', fontSize: 12.5 }}>
+                  <span style={{ color: 'var(--text-dim)', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</span>
+                  <span style={{ fontWeight: 600, textAlign: 'right' }}>{String(value)}</span>
+                </div>
+              );
+            })}
+          </div>
           <button
             className="btn btn-ghost"
             style={{ width: '100%', marginBottom: 8 }}
