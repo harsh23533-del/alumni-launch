@@ -418,3 +418,31 @@ body {
     padding: 0 3px;
   }
 }
+
+/* Scrolling icon strip behind the landing-page CTA buttons */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 22s linear infinite;
+}
+
+.marquee-track-inner {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.marquee-track-inner svg {
+  margin: 0 26px;
+  opacity: 0.18;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}

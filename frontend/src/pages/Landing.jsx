@@ -4,6 +4,32 @@ import usePageTitle from '../hooks/usePageTitle';
 import api from '../api/client';
 import ReactionBar from '../components/ReactionBar';
 
+const marqueeIconProps = { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: 'white', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' };
+
+const marqueeIcons = [
+  () => ( // rocket
+    <svg {...marqueeIconProps}><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg>
+  ),
+  () => ( // laptop
+    <svg {...marqueeIconProps}><rect x="3" y="4" width="18" height="12" rx="1.5" /><path d="M2 20h20" /></svg>
+  ),
+  () => ( // document / resume
+    <svg {...marqueeIconProps}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M9 13h6M9 17h6" /></svg>
+  ),
+  () => ( // handshake
+    <svg {...marqueeIconProps}><path d="M11 17l-1.6-1.6a2 2 0 0 0-2.8 0l-.3.3" /><path d="M2 12l4-4 4.5 4.5a1.5 1.5 0 0 1-2.12 2.12" /><path d="M22 12l-4-4-6 6" /><path d="M14.5 14.5l1.62 1.62a1.5 1.5 0 0 0 2.12-2.12" /></svg>
+  ),
+  () => ( // lightbulb
+    <svg {...marqueeIconProps}><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.4 1 1.2 1 2.3h6c0-1.1.4-1.9 1-2.3A7 7 0 0 0 12 2z" /></svg>
+  ),
+  () => ( // graduation cap
+    <svg {...marqueeIconProps}><path d="M22 10L12 5 2 10l10 5 10-5z" /><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5" /></svg>
+  ),
+  () => ( // briefcase
+    <svg {...marqueeIconProps}><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+  ),
+];
+
 export default function Landing() {
   const navigate = useNavigate();
   const [heroVideoUrl, setHeroVideoUrl] = useState(null);
@@ -82,17 +108,41 @@ export default function Landing() {
       </div>
 
       <div className="page" style={{ paddingTop: 0 }}>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', margin: '32px 0' }}>
-          <button className="btn btn-brass" style={{ padding: '9px 16px', fontSize: 13.5 }} onClick={() => navigate('/signup/alumni')}>
-            I'm an alumnus — post a startup
-          </button>
-          <button
-            className="btn btn-ghost"
-            style={{ padding: '9px 16px', fontSize: 13.5 }}
-            onClick={() => navigate('/signup/student')}
+        <div style={{ position: 'relative', margin: '32px 0', padding: '18px 0', overflow: 'hidden' }}>
+          <div
+            aria-hidden="true"
+            className="marquee-mask"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              zIndex: 0,
+            }}
           >
-            I'm a student — find a role
-          </button>
+            <div className="marquee-track">
+              {[0, 1].map((dup) => (
+                <div className="marquee-track-inner" key={dup}>
+                  {marqueeIcons.map((Icon, i) => (
+                    <Icon key={i} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn btn-brass" style={{ padding: '9px 16px', fontSize: 13.5 }} onClick={() => navigate('/signup/alumni')}>
+              I'm an alumnus — post a startup
+            </button>
+            <button
+              className="btn btn-ghost"
+              style={{ padding: '9px 16px', fontSize: 13.5 }}
+              onClick={() => navigate('/signup/student')}
+            >
+              I'm a student — find a role
+            </button>
+          </div>
         </div>
 
         <MediaGallery />
