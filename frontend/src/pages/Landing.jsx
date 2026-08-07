@@ -48,6 +48,7 @@ export default function Landing() {
           textAlign: 'center',
           overflow: 'hidden',
           color: 'var(--paper)',
+          background: '#0A0E14',
         }}
       >
         {heroVideoUrl ? (
@@ -63,7 +64,7 @@ export default function Landing() {
               inset: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: 'contain',
               zIndex: 0,
             }}
           />
@@ -87,7 +88,7 @@ export default function Landing() {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(22,33,62,0.82) 0%, rgba(22,33,62,0.9) 55%, rgba(22,33,62,0.97) 100%)',
+            background: 'linear-gradient(180deg, rgba(10,14,20,0.15) 0%, rgba(10,14,20,0.15) 70%, rgba(10,14,20,0.6) 100%)',
             zIndex: 1,
           }}
         />
@@ -132,12 +133,12 @@ export default function Landing() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-brass" style={{ padding: '9px 16px', fontSize: 13.5 }} onClick={() => navigate('/signup/alumni')}>
+            <button className="btn btn-brass" style={{ padding: '9px 16px', fontSize: 12.5 }} onClick={() => navigate('/signup/alumni')}>
               I'm an alumnus — post a startup
             </button>
             <button
               className="btn btn-ghost"
-              style={{ padding: '9px 16px', fontSize: 13.5 }}
+              style={{ padding: '9px 16px', fontSize: 12.5 }}
               onClick={() => navigate('/signup/student')}
             >
               I'm a student — find a role
