@@ -161,6 +161,28 @@ body {
 
 .nav-links button:hover, .nav-links a:hover { color: var(--ink); }
 
+@media (min-width: 769px) {
+  .topbar-icon-row {
+    background: var(--paper-raised) !important;
+    padding: 8px 18px !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    flex-wrap: nowrap !important;
+    white-space: nowrap;
+  }
+
+  .topbar-icon-row .brand { margin-right: 4px; }
+
+  .topbar-icon-row button {
+    transition: transform 0.15s ease;
+  }
+
+  .topbar-icon-row button:hover {
+    transform: translateY(-1px) scale(1.06);
+  }
+}
+
 .card {
   background: var(--paper-raised);
   border: 1px solid var(--line);

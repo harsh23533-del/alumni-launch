@@ -11,7 +11,7 @@ export default function Topbar() {
 
   return (
     <div className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className="topbar-icon-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div className="brand" onClick={() => setLogoPopped(true)} style={{ cursor: 'pointer' }}>
           <img src="/logo.png" alt="AlumniLaunch" className="brand-seal" style={{ objectFit: 'cover' }} />
           AlumniLaunch
