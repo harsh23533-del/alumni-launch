@@ -153,6 +153,14 @@ body {
   .topbar .nav-links button:not(.btn):hover {
     color: #fff;
   }
+
+  /* Profile dropdown sits right after the logo on the left side of the
+     topbar. On wide screens `right:0` (the mobile-safe default) pushes it
+     off the left edge of the viewport, so anchor it from the left instead. */
+  .profile-summary-dropdown {
+    left: 0 !important;
+    right: auto !important;
+  }
 }
 
 .brand {

@@ -85,7 +85,7 @@ export default function ProfileSummary() {
 
       {open && (
         <div
-          className="card"
+          className="card profile-summary-dropdown"
           style={{
             position: 'absolute',
             right: 0,
