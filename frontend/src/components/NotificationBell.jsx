@@ -104,6 +104,15 @@ export default function NotificationBell() {
               📄 My applications
             </div>
           )}
+          <div
+            onClick={() => { setOpen(false); navigate('/startups'); }}
+            style={{
+              padding: '10px 14px', borderBottom: '1px solid var(--line)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, fontWeight: 600,
+            }}
+          >
+            🔎 Browse open startups without an account
+          </div>
           {notifications.length === 0 && (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-dim)', fontSize: 13.5 }}>
               No notifications yet.

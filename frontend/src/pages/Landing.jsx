@@ -7,7 +7,6 @@ import ReactionBar from '../components/ReactionBar';
 export default function Landing() {
   const navigate = useNavigate();
   const [heroVideoUrl, setHeroVideoUrl] = useState(null);
-  const [videoDone, setVideoDone] = useState(false);
   usePageTitle('Home', 'Where alumni startups find their first hires. Browse startups and jobs posted by alumni and companies, and apply directly with your resume.');
 
   useEffect(() => {
@@ -29,11 +28,10 @@ export default function Landing() {
           <video
             src={heroVideoUrl}
             autoPlay
+            loop
             muted
             playsInline
             aria-hidden="true"
-            onEnded={() => setVideoDone(true)}
-            onError={() => setVideoDone(true)}
             style={{
               position: 'absolute',
               inset: 0,
@@ -48,7 +46,6 @@ export default function Landing() {
             src="/images/hero-campus.webp"
             alt=""
             aria-hidden="true"
-            onLoad={() => setVideoDone(true)}
             style={{
               position: 'absolute',
               inset: 0,
@@ -82,55 +79,19 @@ export default function Landing() {
             zIndex: 1,
           }}
         />
-
-        {/* Once the video finishes, fade the frame to black and reveal the CTAs
-            in the same spot — nothing moves outside the video frame. */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: '#000',
-            zIndex: 2,
-            opacity: videoDone ? 1 : 0,
-            transition: 'opacity 0.6s ease',
-            pointerEvents: 'none',
-          }}
-        />
-
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 3,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 14,
-            flexWrap: 'wrap',
-            padding: '0 20px',
-            opacity: videoDone ? 1 : 0,
-            transition: 'opacity 0.6s ease 0.2s',
-            pointerEvents: videoDone ? 'auto' : 'none',
-          }}
-        >
-          <button className="btn btn-brass" style={{ padding: '13px 22px', fontSize: 15 }} onClick={() => navigate('/signup/alumni')}>
-            I'm an alumnus — post a startup
-          </button>
-          <button
-            className="btn"
-            style={{ padding: '13px 22px', fontSize: 15, background: 'rgba(255,255,255,0.08)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.35)' }}
-            onClick={() => navigate('/signup/student')}
-          >
-            I'm a student — find a role
-          </button>
-        </div>
       </div>
 
       <div className="page" style={{ paddingTop: 0 }}>
-        <div style={{ textAlign: 'center', margin: '40px 0' }}>
-          <button className="btn btn-ghost" onClick={() => navigate('/startups')}>
-            Browse open startups without an account →
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', margin: '32px 0' }}>
+          <button className="btn btn-brass" style={{ padding: '9px 16px', fontSize: 13.5 }} onClick={() => navigate('/signup/alumni')}>
+            I'm an alumnus — post a startup
+          </button>
+          <button
+            className="btn btn-ghost"
+            style={{ padding: '9px 16px', fontSize: 13.5 }}
+            onClick={() => navigate('/signup/student')}
+          >
+            I'm a student — find a role
           </button>
         </div>
 
