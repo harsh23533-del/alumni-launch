@@ -261,6 +261,29 @@ body {
   }
 }
 
+.page-chat { max-width: 680px; }
+
+@media (min-width: 769px) {
+  .page-panel {
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding-top: 40px !important;
+    padding-bottom: 48px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  }
+
+  .page-chat {
+    max-width: 960px;
+  }
+
+  .page-chat .card {
+    height: 560px !important;
+  }
+}
+
 .card {
   background: var(--paper-raised);
   border: 1px solid var(--line);

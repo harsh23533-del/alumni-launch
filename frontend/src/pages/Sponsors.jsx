@@ -12,7 +12,7 @@ export default function Sponsors() {
   }, []);
 
   return (
-    <div className="page" style={{ paddingTop: 32 }}>
+    <div className="page page-panel" style={{ paddingTop: 32 }}>
       <h2 style={{ fontSize: 20, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 24 }}>⭐</span> Our sponsors
       </h2>
@@ -23,7 +23,7 @@ export default function Sponsors() {
       {sponsors === null && <p style={{ color: 'var(--text-dim)' }}>Loading…</p>}
       {sponsors && sponsors.length === 0 && <p style={{ color: 'var(--text-dim)' }}>No sponsors yet.</p>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
         {sponsors?.map((s) => (
           <div key={s.id} className="card" style={{ padding: 14 }}>
             <img

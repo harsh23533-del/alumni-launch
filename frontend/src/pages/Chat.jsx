@@ -55,7 +55,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="page" style={{ paddingTop: 32, maxWidth: 680 }}>
+    <div className="page page-panel page-chat" style={{ paddingTop: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <h2 style={{ fontSize: 26 }}>Community chat</h2>
         <span style={{ fontSize: 12.5, color: connected ? 'var(--teal)' : 'var(--text-dim)' }}>

@@ -13,7 +13,7 @@ export default function Groups() {
   }, []);
 
   return (
-    <div className="page" style={{ paddingTop: 32 }}>
+    <div className="page page-panel" style={{ paddingTop: 32 }}>
       <h2 style={{ fontSize: 20, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 24 }}>👥</span> Groups
       </h2>
@@ -26,7 +26,7 @@ export default function Groups() {
         <p style={{ color: 'var(--text-dim)' }}>No groups yet — groups appear here once an idea owner accepts a join request.</p>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
         {groups?.map((g) => (
           <div
             key={g.id}
