@@ -82,33 +82,49 @@ export default function Landing() {
             zIndex: 1,
           }}
         />
-      </div>
 
-      {/* CTA buttons sit below the video and only appear once it finishes playing,
-          instead of overlapping the video itself. */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 14,
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          padding: '32px 20px 0',
-          opacity: videoDone ? 1 : 0,
-          transform: videoDone ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.5s ease, transform 0.5s ease',
-          pointerEvents: videoDone ? 'auto' : 'none',
-        }}
-      >
-        <button className="btn btn-brass" style={{ padding: '13px 22px', fontSize: 15 }} onClick={() => navigate('/signup/alumni')}>
-          I'm an alumnus — post a startup
-        </button>
-        <button
-          className="btn"
-          style={{ padding: '13px 22px', fontSize: 15, background: 'rgba(255,255,255,0.08)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.35)' }}
-          onClick={() => navigate('/signup/student')}
+        {/* Once the video finishes, fade the frame to black and reveal the CTAs
+            in the same spot — nothing moves outside the video frame. */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: '#000',
+            zIndex: 2,
+            opacity: videoDone ? 1 : 0,
+            transition: 'opacity 0.6s ease',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 3,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 14,
+            flexWrap: 'wrap',
+            padding: '0 20px',
+            opacity: videoDone ? 1 : 0,
+            transition: 'opacity 0.6s ease 0.2s',
+            pointerEvents: videoDone ? 'auto' : 'none',
+          }}
         >
-          I'm a student — find a role
-        </button>
+          <button className="btn btn-brass" style={{ padding: '13px 22px', fontSize: 15 }} onClick={() => navigate('/signup/alumni')}>
+            I'm an alumnus — post a startup
+          </button>
+          <button
+            className="btn"
+            style={{ padding: '13px 22px', fontSize: 15, background: 'rgba(255,255,255,0.08)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.35)' }}
+            onClick={() => navigate('/signup/student')}
+          >
+            I'm a student — find a role
+          </button>
+        </div>
       </div>
 
       <div className="page" style={{ paddingTop: 0 }}>
