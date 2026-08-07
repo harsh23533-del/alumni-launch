@@ -81,17 +81,6 @@ export default function Landing() {
         />
 
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 900, margin: '0 auto' }}>
-          <div className="rise-in rise-in-1" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--brass-soft)', marginBottom: 14 }}>
-            For alumni & students
-          </div>
-          <h1 className="rise-in rise-in-2" style={{ fontSize: 'clamp(28px, 7vw, 48px)', lineHeight: 1.15, maxWidth: 680, margin: '0 auto', color: 'var(--paper)' }}>
-            Where alumni startups find their first hires.
-          </h1>
-          <p className="rise-in rise-in-2" style={{ fontSize: 'clamp(14.5px, 3.5vw, 17px)', color: 'rgba(246,247,251,0.78)', maxWidth: 520, margin: '20px auto 0', lineHeight: 1.6 }}>
-            Alumni post the startup they're building and who they need.
-            Students apply directly with a resume. No middle steps.
-          </p>
-
           <div className="rise-in rise-in-3" style={{ display: 'flex', gap: 14, justifyContent: 'center', marginTop: 32, flexWrap: 'wrap' }}>
             <button className="btn btn-brass" style={{ padding: '13px 22px', fontSize: 15 }} onClick={() => navigate('/signup/alumni')}>
               I'm an alumnus — post a startup
