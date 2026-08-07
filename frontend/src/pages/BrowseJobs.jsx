@@ -76,7 +76,9 @@ export default function BrowseJobs() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
-        <h2 style={{ fontSize: 26 }}>Jobs & internships</h2>
+        <h2 style={{ fontSize: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 24 }}>💼</span> Jobs &amp; internships
+        </h2>
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}

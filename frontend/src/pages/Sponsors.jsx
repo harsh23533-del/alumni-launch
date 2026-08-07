@@ -13,8 +13,10 @@ export default function Sponsors() {
 
   return (
     <div className="page" style={{ paddingTop: 32 }}>
-      <h2 style={{ fontSize: 26, marginBottom: 6 }}>Our sponsors</h2>
-      <p style={{ color: 'var(--text-dim)', marginBottom: 24 }}>
+      <h2 style={{ fontSize: 20, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 24 }}>⭐</span> Our sponsors
+      </h2>
+      <p style={{ color: 'var(--text-dim)', marginBottom: 24, fontSize: 13.5 }}>
         Organizations supporting the AlumniLaunch community.
       </p>
 
@@ -29,9 +31,11 @@ export default function Sponsors() {
               alt={s.name}
               style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 8, marginBottom: 10 }}
             />
-            <h3 style={{ fontSize: 15.5, marginBottom: 4 }}>{s.name}</h3>
+            <h3 style={{ fontSize: 15.5, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 17 }}>🏢</span> {s.name}
+            </h3>
             {s.description && (
-              <p style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 10 }}>{s.description}</p>
+              <p style={{ fontSize: 12.5, color: 'var(--text-dim)', marginBottom: 10 }}>{s.description}</p>
             )}
             {s.link_url && (
               <a
@@ -41,7 +45,7 @@ export default function Sponsors() {
                 className="btn btn-ghost"
                 style={{ display: 'inline-block', fontSize: 12.5, padding: '6px 12px', marginBottom: 10 }}
               >
-                Visit website
+                🔗 Visit website
               </a>
             )}
             <ReactionBar targetType="sponsor" targetId={s.id} />

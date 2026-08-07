@@ -14,8 +14,10 @@ export default function Groups() {
 
   return (
     <div className="page" style={{ paddingTop: 32 }}>
-      <h2 style={{ fontSize: 26, marginBottom: 6 }}>Groups</h2>
-      <p style={{ color: 'var(--text-dim)', marginBottom: 24 }}>
+      <h2 style={{ fontSize: 20, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 24 }}>👥</span> Groups
+      </h2>
+      <p style={{ color: 'var(--text-dim)', marginBottom: 24, fontSize: 13.5 }}>
         Teams that have formed around student ideas across AlumniLaunch.
       </p>
 
@@ -39,11 +41,13 @@ export default function Groups() {
                 style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 8, marginBottom: 10 }}
               />
             )}
-            <h3 style={{ fontSize: 15.5, marginBottom: 4 }}>{g.title}</h3>
+            <h3 style={{ fontSize: 15.5, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 17 }}>🧩</span> {g.title}
+            </h3>
             <p style={{ fontSize: 12.5, color: 'var(--text-dim)', marginBottom: 8 }}>
-              Started by {g.student_name || 'a student'}
+              👤 Started by {g.student_name || 'a student'}
             </p>
-            <span className="seal seal-open">{g.member_count} member{g.member_count === 1 ? '' : 's'}</span>
+            <span className="seal seal-open">👥 {g.member_count} member{g.member_count === 1 ? '' : 's'}</span>
           </div>
         ))}
       </div>

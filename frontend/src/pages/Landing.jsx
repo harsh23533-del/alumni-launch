@@ -117,7 +117,9 @@ function MediaGallery() {
 
   return (
     <div style={{ marginTop: 56 }}>
-      <h3 style={{ fontSize: 20, textAlign: 'center', marginBottom: 20 }}>From the campus</h3>
+      <h3 style={{ fontSize: 17, textAlign: 'center', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <span style={{ fontSize: 20 }}>🎓</span> From the campus
+      </h3>
       <div
         style={{
           display: 'flex',

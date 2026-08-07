@@ -192,8 +192,10 @@ export default function Ideas() {
     <div className="page" style={{ paddingTop: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontSize: 26 }}>Student ideas</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: 13.5 }}>
+          <h2 style={{ fontSize: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 24 }}>💡</span> Student ideas
+          </h2>
+          <p style={{ color: 'var(--text-dim)', fontSize: 12.5 }}>
             Pitch your idea with a poster, document, or a voice note. Alumni and companies can rate it and message you directly.
           </p>
         </div>
@@ -208,7 +210,9 @@ export default function Ideas() {
 
       {role === 'student' && myGroups.length > 0 && (
         <div style={{ marginBottom: 28 }}>
-          <h3 style={{ fontSize: 16, marginBottom: 10 }}>My groups</h3>
+          <h3 style={{ fontSize: 16, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 18 }}>🧩</span> My groups
+          </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
             {myGroups.map((g) => (
               <div
@@ -284,11 +288,11 @@ export default function Ideas() {
                 />
               )}
               <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: 18, marginBottom: 2, cursor: 'pointer' }} onClick={() => setOpenIdea(idea)}>
-                  {idea.title}
+                <h3 style={{ fontSize: 16, marginBottom: 2, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => setOpenIdea(idea)}>
+                  <span style={{ fontSize: 18 }}>💡</span> {idea.title}
                 </h3>
-                <p style={{ color: 'var(--text-dim)', fontSize: 13 }}>by {idea.student_name}</p>
-                <p style={{ fontSize: 14, marginTop: 6, maxWidth: 640 }}>{idea.description}</p>
+                <p style={{ color: 'var(--text-dim)', fontSize: 12.5 }}>👤 by {idea.student_name}</p>
+                <p style={{ fontSize: 13, marginTop: 6, maxWidth: 640 }}>{idea.description}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
                   <Stars value={idea.avg_rating} readOnly />
                   <span style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>
