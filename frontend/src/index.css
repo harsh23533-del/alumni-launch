@@ -183,6 +183,48 @@ body {
   }
 }
 
+.desktop-icon-nav { display: none; }
+
+@media (min-width: 769px) {
+  .desktop-icon-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--paper-raised);
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .desktop-icon-nav button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: transform 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+
+  .desktop-icon-nav button:hover {
+    color: var(--ink);
+    background: var(--paper);
+    transform: translateY(-1px) scale(1.08);
+  }
+
+  .desktop-icon-nav-active {
+    color: var(--brass) !important;
+    background: rgba(45, 212, 191, 0.12) !important;
+  }
+}
+
 .card {
   background: var(--paper-raised);
   border: 1px solid var(--line);

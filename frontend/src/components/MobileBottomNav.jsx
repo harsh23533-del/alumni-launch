@@ -63,7 +63,8 @@ const icons = {
   ),
 };
 
-function buildTabs({ isAuthenticated, role, isAdmin }) {
+export const navIcons = icons;
+export function buildTabs({ isAuthenticated, role, isAdmin }) {
   if (!isAuthenticated) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },

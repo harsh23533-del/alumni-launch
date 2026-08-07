@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
 import ProfileSummary from './ProfileSummary';
+import { navIcons, buildTabs } from './MobileBottomNav';
 
 export default function Topbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, role, isAdmin, logout } = useAuth();
   const [logoPopped, setLogoPopped] = useState(false);
+  const desktopTabs = buildTabs({ isAuthenticated, role, isAdmin }).filter((t) => !t.action);
 
   return (
     <div className="topbar">
@@ -29,27 +32,27 @@ export default function Topbar() {
           </button>
         )}
       </div>
+      <div className="desktop-icon-nav" role="navigation" aria-label="Main">
+        {desktopTabs.map((tab) => {
+          const isActive = tab.path === '/' ? location.pathname === '/' : location.pathname.startsWith(tab.path);
+          return (
+            <button
+              key={tab.id}
+              title={tab.label}
+              aria-label={tab.label}
+              className={isActive ? 'desktop-icon-nav-active' : ''}
+              onClick={() => navigate(tab.path)}
+            >
+              {navIcons[tab.icon]}
+            </button>
+          );
+        })}
+      </div>
       <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {!isAuthenticated && (
-          <>
-            <button onClick={() => navigate('/startups')}>Browse startups</button>
-            <button onClick={() => navigate('/login')}>Log in</button>
-            <button className="btn btn-primary" onClick={() => navigate('/signup')}>
-              Sign up
-            </button>
-          </>
-        )}
-        {isAuthenticated && !isAdmin && (
-          <>
-            <button onClick={() => navigate('/startups')}>Browse startups</button>
-            <button onClick={() => { logout(); navigate('/'); }}>Log out</button>
-          </>
-        )}
-        {isAuthenticated && isAdmin && (
-          <>
-            <button onClick={() => navigate('/admin/dashboard')}>Admin dashboard</button>
-            <button onClick={() => { logout(); navigate('/'); }}>Log out</button>
-          </>
+          <button className="btn btn-primary" onClick={() => navigate('/signup')}>
+            Sign up
+          </button>
         )}
       </div>
 
