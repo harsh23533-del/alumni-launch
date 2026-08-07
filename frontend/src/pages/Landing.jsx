@@ -81,26 +81,6 @@ export default function Landing() {
         />
 
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 900, margin: '0 auto' }}>
-          <div
-            className="rise-in rise-in-1"
-            style={{
-              width: 56,
-              height: 56,
-              margin: '0 auto 22px',
-              borderRadius: '50%',
-              background: 'var(--brass)',
-              color: 'var(--ink)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'var(--font-display)',
-              fontSize: 24,
-              boxShadow: '0 10px 24px rgba(0,0,0,0.35), inset 0 0 0 3px rgba(255,255,255,0.25)',
-            }}
-          >
-            A
-          </div>
-
           <div className="rise-in rise-in-1" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--brass-soft)', marginBottom: 14 }}>
             For alumni & students
           </div>
@@ -128,25 +108,6 @@ export default function Landing() {
       </div>
 
       <div className="page" style={{ paddingTop: 0 }}>
-        <div className="row-2 rise-in rise-in-3" style={{ marginTop: 48 }}>
-          <div className="card">
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--brass)', marginBottom: 4 }}>01</div>
-            <h3 style={{ fontSize: 19 }}>Already in our records?</h3>
-            <p style={{ color: 'var(--text-dim)', fontSize: 14.5, marginTop: 8, lineHeight: 1.6 }}>
-              If your college has shared alumni data with us, we'll recognise your email
-              the moment you sign up — you just set a password to claim your profile.
-            </p>
-          </div>
-          <div className="card">
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--brass)', marginBottom: 4 }}>02</div>
-            <h3 style={{ fontSize: 19 }}>Post once, review at your pace</h3>
-            <p style={{ color: 'var(--text-dim)', fontSize: 14.5, marginTop: 8, lineHeight: 1.6 }}>
-              Describe your startup, the stage it's at, and the roles you need filled.
-              Applications with resumes land in one dashboard for you to accept or decline.
-            </p>
-          </div>
-        </div>
-
         <div style={{ textAlign: 'center', margin: '40px 0' }}>
           <button className="btn btn-ghost" onClick={() => navigate('/startups')}>
             Browse open startups without an account →
