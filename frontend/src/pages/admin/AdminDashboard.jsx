@@ -308,7 +308,7 @@ export default function AdminDashboard() {
             <div key={j.id} className="card" style={{ padding: '14px 16px' }}>
               <div style={rowStyle}>
                 <div>
-                  <h3 style={{ fontSize: 16 }}>{j.title}</h3>
+                  <h3 style={{ fontSize: 16 }}>{j.is_government ? '🏛️ ' : ''}{j.title}</h3>
                   <div style={metaStyle}>
                     {j.job_type} · {j.location || 'Location not set'} · posted by {j.posted_by_name || 'unknown'} ({j.posted_by_type}) · {j.is_active ? 'active' : 'inactive'}
                   </div>

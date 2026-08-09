@@ -382,20 +382,21 @@ def list_all_jobs(db: Session = Depends(get_db), admin: User = Depends(require_a
     rows = db.query(Job).order_by(Job.created_at.desc()).all()
     out = []
     for j in rows:
-        posted_by_name = None
-        posted_by_type = None
-        if j.alumni:
-            posted_by_name = j.alumni.name
-            posted_by_type = "alumni"
+        if j.is_government:
+            posted_by_name, posted_by_type = "Government", "government"
+        elif j.alumni:
+            posted_by_name, posted_by_type = j.alumni.name, "alumni"
         elif j.company:
-            posted_by_name = j.company.company_name
-            posted_by_type = "company"
+            posted_by_name, posted_by_type = j.company.company_name, "company"
+        else:
+            posted_by_name, posted_by_type = None, None
         out.append(
             JobOut(
                 id=j.id, title=j.title, job_type=j.job_type.value, location=j.location,
                 description=j.description, skills_required=j.skills_required,
                 stipend_or_salary=j.stipend_or_salary, apply_link=j.apply_link,
-                is_active=j.is_active, created_at=j.created_at,
+                is_active=j.is_active, is_government=j.is_government, eligibility=j.eligibility,
+                created_at=j.created_at,
                 posted_by_name=posted_by_name, posted_by_type=posted_by_type,
             )
         )
