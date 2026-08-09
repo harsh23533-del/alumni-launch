@@ -31,6 +31,7 @@ from app.models.models import (
     CompanyProfile,
     Startup,
     Job,
+    JobType,
     Application,
     JobApplication,
     StudentApprovalStatus,
@@ -49,13 +50,88 @@ from app.schemas.schemas import (
     JobOut,
     ApplicationOut,
     JobApplicationOut,
+    GovtJobCreate,
 )
 from app.admin.schemas import AdminDashboardOut, AdminStudentOut, AdminAlumniOut, AdminCompanyOut, AdminMediaOut, SponsorOut, HomepageVideoOut
-from app.utils.notify import notify_user
+from app.utils.notify import notify_user, broadcast
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-MEDIA_DIR = "uploads/admin_media"
+VALID_ELIGIBILITY = ("10th_plus", "12th_plus", "btech", "after_btech")
+
+
+@router.post("/govt-jobs", response_model=JobOut)
+def create_govt_job(payload: GovtJobCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    if payload.eligibility not in VALID_ELIGIBILITY:
+        raise HTTPException(status_code=400, detail=f"eligibility must be one of {VALID_ELIGIBILITY}")
+    try:
+        job_type = JobType(payload.job_type)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid job_type. Use internship, full_time, or part_time.")
+
+    job = Job(
+        alumni_id=None,
+        company_id=None,
+        title=payload.title,
+        job_type=job_type,
+        location=payload.location,
+        description=payload.description,
+        skills_required=payload.skills_required,
+        stipend_or_salary=payload.stipend_or_salary,
+        apply_link=payload.apply_link,
+        is_government=True,
+        eligibility=payload.eligibility,
+    )
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+
+    broadcast(db, title="New government job posted", message=f"{job.title} — sign in to view.", link="/jobs", exclude_user_id=admin.id)
+
+    return JobOut(
+        id=job.id, title=job.title,
+        job_type=job.job_type.value if hasattr(job.job_type, "value") else job.job_type,
+        location=job.location, description=job.description, skills_required=job.skills_required,
+        stipend_or_salary=job.stipend_or_salary, apply_link=job.apply_link, is_active=job.is_active,
+        is_government=True, eligibility=job.eligibility, created_at=job.created_at,
+        posted_by_name="Government", posted_by_type="government",
+    )
+
+
+@router.get("/govt-jobs", response_model=List[JobOut])
+def list_govt_jobs(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    jobs = db.query(Job).filter(Job.is_government == True).order_by(Job.created_at.desc()).all()  # noqa: E712
+    return [
+        JobOut(
+            id=j.id, title=j.title,
+            job_type=j.job_type.value if hasattr(j.job_type, "value") else j.job_type,
+            location=j.location, description=j.description, skills_required=j.skills_required,
+            stipend_or_salary=j.stipend_or_salary, apply_link=j.apply_link, is_active=j.is_active,
+            is_government=True, eligibility=j.eligibility, created_at=j.created_at,
+            posted_by_name="Government", posted_by_type="government",
+        )
+        for j in jobs
+    ]
+
+
+@router.patch("/govt-jobs/{job_id}/close")
+def close_govt_job(job_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    job = db.query(Job).filter(Job.id == job_id, Job.is_government == True).first()  # noqa: E712
+    if not job:
+        raise HTTPException(status_code=404, detail="Government job not found")
+    job.is_active = False
+    db.commit()
+    return {"message": "closed"}
+
+
+@router.delete("/govt-jobs/{job_id}")
+def delete_govt_job(job_id: str, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    job = db.query(Job).filter(Job.id == job_id, Job.is_government == True).first()  # noqa: E712
+    if not job:
+        raise HTTPException(status_code=404, detail="Government job not found")
+    db.delete(job)
+    db.commit()
+    return {"message": "deleted"}
 os.makedirs(MEDIA_DIR, exist_ok=True)
 
 

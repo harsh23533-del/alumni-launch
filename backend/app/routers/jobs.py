@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.core.deps import require_poster, require_student, get_current_user
 from app.models.models import DirectMessage, Job, JobApplication, User, JobType, JobApplicationStatus
 from app.schemas.schemas import (
-    JobCreate, JobOut, JobApplicationOut, JobApplicationStatusUpdate,
+    JobCreate, JobOut, JobApplicationOut, JobApplicationStatusUpdate, GovtJobTeaser,
 )
 from app.utils.notify import notify_admin, broadcast, notify_user
 
@@ -16,7 +16,10 @@ router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
 def _to_job_out(job: Job) -> JobOut:
-    if job.alumni_id:
+    if job.is_government:
+        posted_by_name = "Government"
+        posted_by_type = "government"
+    elif job.alumni_id:
         posted_by_name = job.alumni.name if job.alumni else None
         posted_by_type = "alumni"
     else:
@@ -33,6 +36,8 @@ def _to_job_out(job: Job) -> JobOut:
         stipend_or_salary=job.stipend_or_salary,
         apply_link=job.apply_link,
         is_active=job.is_active,
+        is_government=job.is_government,
+        eligibility=job.eligibility,
         created_at=job.created_at,
         posted_by_name=posted_by_name,
         posted_by_type=posted_by_type,
@@ -70,11 +75,32 @@ def create_job(payload: JobCreate, db: Session = Depends(get_db), user: User = D
 
 @router.get("", response_model=List[JobOut])
 def list_jobs(job_type: Optional[str] = None, is_active: bool = True, db: Session = Depends(get_db)):
-    query = db.query(Job).filter(Job.is_active == is_active)
+    # Government jobs live in their own section (see /jobs/government below) —
+    # they're posted only from the admin panel and gated behind sign-in, so
+    # keep them out of the regular alumni/company job listing entirely.
+    query = db.query(Job).filter(Job.is_active == is_active, Job.is_government == False)  # noqa: E712
     if job_type:
         query = query.filter(Job.job_type == job_type)
     jobs = query.order_by(Job.created_at.desc()).all()
     return [_to_job_out(j) for j in jobs]
+
+
+@router.get("/government", response_model=List[GovtJobTeaser])
+def list_government_jobs(db: Session = Depends(get_db)):
+    """Public — anyone (even signed out) can see that these exist and their
+    title/eligibility, but not the description or apply link. Full details
+    require /jobs/government/{id} with a valid sign-in."""
+    jobs = db.query(Job).filter(Job.is_government == True, Job.is_active == True).order_by(Job.created_at.desc()).all()  # noqa: E712
+    return jobs
+
+
+@router.get("/government/{job_id}", response_model=JobOut)
+def get_government_job(job_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    """Full details — requires sign-in (any role)."""
+    job = db.query(Job).filter(Job.id == job_id, Job.is_government == True).first()  # noqa: E712
+    if not job:
+        raise HTTPException(status_code=404, detail="Government job not found")
+    return _to_job_out(job)
 
 
 @router.get("/mine", response_model=List[JobOut])

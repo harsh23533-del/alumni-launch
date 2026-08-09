@@ -164,9 +164,37 @@ class JobOut(BaseModel):
     stipend_or_salary: Optional[str]
     apply_link: Optional[str]
     is_active: bool
+    is_government: bool = False
+    eligibility: Optional[str] = None
     created_at: datetime
     posted_by_name: Optional[str] = None
     posted_by_type: Optional[str] = None  # "alumni" | "company"
+
+    class Config:
+        from_attributes = True
+
+
+class GovtJobCreate(BaseModel):
+    title: str
+    job_type: str = "full_time"
+    location: Optional[str] = None
+    description: Optional[str] = None
+    skills_required: Optional[str] = None
+    stipend_or_salary: Optional[str] = None
+    apply_link: Optional[str] = None
+    eligibility: str  # '10th_plus' | '12th_plus' | 'btech' | 'after_btech'
+
+
+class GovtJobTeaser(BaseModel):
+    """What anyone (even signed out) can see in the list — no description,
+    no apply link. Full details require sign-in."""
+    id: str
+    title: str
+    job_type: str
+    location: Optional[str]
+    eligibility: Optional[str]
+    is_active: bool
+    created_at: datetime
 
     class Config:
         from_attributes = True

@@ -147,6 +147,71 @@ export default function Landing() {
         </div>
 
         <MediaGallery />
+
+        <AdminOathFooter />
+      </div>
+    </div>
+  );
+}
+
+function AdminOathFooter() {
+  return (
+    <div
+      style={{
+        marginTop: 56,
+        borderRadius: 20,
+        padding: '32px 24px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, rgba(45,212,191,0.14) 0%, rgba(232,201,118,0.14) 100%)',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '-80px',
+          right: '-60px',
+          width: 260,
+          height: 260,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(45,212,191,0.25) 0%, rgba(45,212,191,0) 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--brass)', marginBottom: 10 }}>
+        Admin's Oath ❤️‍🩹
+      </div>
+      <p style={{ maxWidth: 560, margin: '0 auto', fontSize: 14, lineHeight: 1.7, color: 'var(--text-dim)' }}>
+        As the Alumni Network Admin, I'm always open to supporting anyone who wants to work on an
+        idea, startup, or initiative. I'll make my best efforts to help with websites, resources,
+        connections, agents, or anything else you may need to get started.
+      </p>
+      <p style={{ fontSize: 13.5, marginTop: 14, color: 'var(--text-dim)' }}>Feel free to reach out anytime.</p>
+
+      <div style={{ marginTop: 18, fontSize: 16, fontWeight: 700 }}>Harsh Pandey</div>
+
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 14, flexWrap: 'wrap' }}>
+        <a
+          href="https://www.linkedin.com/in/harsh-pandey-9a5219303"
+          target="_blank"
+          rel="noreferrer"
+          className="btn btn-ghost"
+          style={{ padding: '8px 16px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        >
+          🔗 LinkedIn
+        </a>
+        <a
+          href="https://www.instagram.com/harshhhh452024/"
+          target="_blank"
+          rel="noreferrer"
+          className="btn btn-ghost"
+          style={{ padding: '8px 16px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        >
+          📸 Instagram
+        </a>
       </div>
     </div>
   );

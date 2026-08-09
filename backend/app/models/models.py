@@ -176,6 +176,8 @@ class Job(Base):
     stipend_or_salary = Column(String, nullable=True)
     apply_link = Column(String, nullable=True)  # optional external link
     is_active = Column(Boolean, default=True)
+    is_government = Column(Boolean, default=False)  # posted only via admin panel
+    eligibility = Column(String, nullable=True)  # '10th_plus' | '12th_plus' | 'btech' | 'after_btech'
     created_at = Column(DateTime, default=datetime.utcnow)
 
     alumni = relationship("AlumniProfile")

@@ -13,7 +13,7 @@ const friendlyUploadError = (err) =>
     ? 'Upload failed.'
     : 'Server may still be waking up (free tier can take ~50s). Please try again.');
 
-const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Applications', 'Media', 'Chat'];
+const TABS = ['Overview', 'Students', 'Alumni', 'Companies', 'Startups', 'Jobs', 'Govt Jobs', 'Applications', 'Media', 'Chat'];
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('Overview');
@@ -23,6 +23,10 @@ export default function AdminDashboard() {
   const [companies, setCompanies] = useState(null);
   const [startups, setStartups] = useState(null);
   const [jobs, setJobs] = useState(null);
+  const [govtJobs, setGovtJobs] = useState(null);
+  const [govtForm, setGovtForm] = useState({ title: '', job_type: 'full_time', location: '', eligibility: '10th_plus', description: '', skills_required: '', stipend_or_salary: '', apply_link: '' });
+  const [govtPosting, setGovtPosting] = useState(false);
+  const [govtError, setGovtError] = useState('');
   const [applications, setApplications] = useState(null);
   const [jobApplications, setJobApplications] = useState(null);
   const [error, setError] = useState('');
@@ -57,6 +61,9 @@ export default function AdminDashboard() {
         } else if (tab === 'Jobs' && !jobs) {
           const res = await api.get('/admin/jobs');
           setJobs(res.data);
+        } else if (tab === 'Govt Jobs' && !govtJobs) {
+          const res = await api.get('/admin/govt-jobs');
+          setGovtJobs(res.data);
         } else if (tab === 'Applications' && !applications) {
           const [a, j] = await Promise.all([
             api.get('/admin/applications'),
@@ -329,6 +336,117 @@ export default function AdminDashboard() {
             </div>
           ))}
         </List>
+      )}
+
+      {tab === 'Govt Jobs' && (
+        <div>
+          <div className="card" style={{ padding: 16, marginBottom: 20 }}>
+            <h3 style={{ fontSize: 15.5, marginBottom: 12 }}>🏛️ Post a government job</h3>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setGovtPosting(true);
+                setGovtError('');
+                try {
+                  const res = await api.post('/admin/govt-jobs', govtForm);
+                  setGovtJobs((prev) => [res.data, ...(prev || [])]);
+                  setGovtForm({ title: '', job_type: 'full_time', location: '', eligibility: '10th_plus', description: '', skills_required: '', stipend_or_salary: '', apply_link: '' });
+                } catch (err) {
+                  setGovtError(friendlyUploadError(err));
+                } finally {
+                  setGovtPosting(false);
+                }
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+            >
+              <input
+                required
+                placeholder="Title (e.g. SSC CGL 2026)"
+                value={govtForm.title}
+                onChange={(e) => setGovtForm({ ...govtForm, title: e.target.value })}
+              />
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <select value={govtForm.job_type} onChange={(e) => setGovtForm({ ...govtForm, job_type: e.target.value })} style={{ flex: 1, minWidth: 140 }}>
+                  <option value="full_time">Full-time</option>
+                  <option value="part_time">Part-time</option>
+                  <option value="internship">Internship</option>
+                </select>
+                <select value={govtForm.eligibility} onChange={(e) => setGovtForm({ ...govtForm, eligibility: e.target.value })} style={{ flex: 1, minWidth: 140 }}>
+                  <option value="10th_plus">10th Pass</option>
+                  <option value="12th_plus">12th Pass</option>
+                  <option value="btech">B.Tech</option>
+                  <option value="after_btech">After B.Tech</option>
+                </select>
+              </div>
+              <input
+                placeholder="Location (optional)"
+                value={govtForm.location}
+                onChange={(e) => setGovtForm({ ...govtForm, location: e.target.value })}
+              />
+              <textarea
+                placeholder="Description (shown only after sign-in)"
+                value={govtForm.description}
+                onChange={(e) => setGovtForm({ ...govtForm, description: e.target.value })}
+              />
+              <input
+                placeholder="Skills / eligibility notes (optional)"
+                value={govtForm.skills_required}
+                onChange={(e) => setGovtForm({ ...govtForm, skills_required: e.target.value })}
+              />
+              <input
+                placeholder="Stipend / salary (optional)"
+                value={govtForm.stipend_or_salary}
+                onChange={(e) => setGovtForm({ ...govtForm, stipend_or_salary: e.target.value })}
+              />
+              <input
+                placeholder="Official notification / apply link (optional)"
+                value={govtForm.apply_link}
+                onChange={(e) => setGovtForm({ ...govtForm, apply_link: e.target.value })}
+              />
+              {govtError && <p style={{ color: 'var(--coral)', fontSize: 13 }}>{govtError}</p>}
+              <button className="btn btn-brass" type="submit" disabled={govtPosting}>
+                {govtPosting ? 'Posting…' : 'Post government job'}
+              </button>
+            </form>
+          </div>
+
+          <List loading={!govtJobs} empty={govtJobs && govtJobs.length === 0} emptyText="No government jobs posted yet.">
+            {govtJobs?.map((j) => (
+              <div key={j.id} className="card" style={{ padding: '14px 16px' }}>
+                <div style={rowStyle}>
+                  <div>
+                    <h3 style={{ fontSize: 16 }}>🏛️ {j.title}</h3>
+                    <div style={metaStyle}>
+                      {j.job_type} · {j.location || 'Location not set'} · eligibility: {j.eligibility} · {j.is_active ? 'active' : 'closed'}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {j.is_active && (
+                      <button
+                        className="btn btn-ghost"
+                        onClick={async () => {
+                          await api.patch(`/admin/govt-jobs/${j.id}/close`);
+                          setGovtJobs((prev) => prev.map((x) => (x.id === j.id ? { ...x, is_active: false } : x)));
+                        }}
+                      >
+                        Close
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-ghost"
+                      onClick={async () => {
+                        await api.delete(`/admin/govt-jobs/${j.id}`);
+                        setGovtJobs((prev) => prev.filter((x) => x.id !== j.id));
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </List>
+        </div>
       )}
 
       {tab === 'Applications' && (
