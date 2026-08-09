@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.cloudinary_config import upload_to_cloudinary
 from app.core.database import get_db
-from app.core.deps import require_poster, require_student, get_current_user
+from app.core.deps import require_poster, require_student
 from app.models.models import DirectMessage, Job, JobApplication, User, JobType, JobApplicationStatus
 from app.schemas.schemas import (
     JobCreate, JobOut, JobApplicationOut, JobApplicationStatusUpdate, GovtJobTeaser,
@@ -87,16 +87,14 @@ def list_jobs(job_type: Optional[str] = None, is_active: bool = True, db: Sessio
 
 @router.get("/government", response_model=List[GovtJobTeaser])
 def list_government_jobs(db: Session = Depends(get_db)):
-    """Public — anyone (even signed out) can see that these exist and their
-    title/eligibility, but not the description or apply link. Full details
-    require /jobs/government/{id} with a valid sign-in."""
+    """Public — anyone (even signed out) can see the list of government jobs."""
     jobs = db.query(Job).filter(Job.is_government == True, Job.is_active == True).order_by(Job.created_at.desc()).all()  # noqa: E712
     return jobs
 
 
 @router.get("/government/{job_id}", response_model=JobOut)
-def get_government_job(job_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    """Full details — requires sign-in (any role)."""
+def get_government_job(job_id: str, db: Session = Depends(get_db)):
+    """Public — full details, open to everyone, no sign-in required."""
     job = db.query(Job).filter(Job.id == job_id, Job.is_government == True).first()  # noqa: E712
     if not job:
         raise HTTPException(status_code=404, detail="Government job not found")

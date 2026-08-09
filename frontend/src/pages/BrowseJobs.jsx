@@ -57,7 +57,7 @@ function GovtJobDetail({ job, onClose }) {
   );
 }
 
-function TeaserCard({ icon, title, meta, isAuthenticated, onClick }) {
+function TeaserCard({ icon, title, meta, onClick }) {
   return (
     <div
       onClick={onClick}
@@ -71,7 +71,7 @@ function TeaserCard({ icon, title, meta, isAuthenticated, onClick }) {
         <div style={{ fontSize: 12.5, color: 'var(--text-dim)', marginTop: 3 }}>{meta}</div>
       </div>
       <span style={{ fontSize: 12.5, color: 'var(--brass)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-        🔒 {isAuthenticated ? 'View details' : 'Sign in to view'}
+        View details
       </span>
     </div>
   );
@@ -147,7 +147,6 @@ export default function BrowseJobs() {
   };
 
   const handleGovtClick = async (job) => {
-    if (!isAuthenticated) return setShowLock(true);
     try {
       const res = await api.get(`/jobs/government/${job.id}`);
       setOpenGovtJob(res.data);
@@ -157,7 +156,6 @@ export default function BrowseJobs() {
   };
 
   const handlePrivateClick = (job) => {
-    if (!isAuthenticated) return setShowLock(true);
     setOpenPrivateJob(job);
   };
 
@@ -184,7 +182,6 @@ export default function BrowseJobs() {
                 icon="🏛️"
                 title={job.title}
                 meta={[job.location && `📍 ${job.location}`, job.eligibility && `🎓 ${ELIGIBILITY_LABELS[job.eligibility] || job.eligibility}`].filter(Boolean).join(' · ')}
-                isAuthenticated={isAuthenticated}
                 onClick={() => handleGovtClick(job)}
               />
             ))}
@@ -219,7 +216,6 @@ export default function BrowseJobs() {
             icon="💼"
             title={j.title}
             meta={[j.location && `📍 ${j.location}`, j.job_type === 'full_time' ? 'Full-time' : 'Part-time'].filter(Boolean).join(' · ')}
-            isAuthenticated={isAuthenticated}
             onClick={() => handlePrivateClick(j)}
           />
         ))}

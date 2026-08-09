@@ -316,52 +316,6 @@ function MediaGallery() {
         ))}
         {!items && <p style={{ color: 'var(--text-dim)', textAlign: 'center' }}>Loading…</p>}
       </div>
-
-      <div
-        style={{
-          marginTop: 72,
-          padding: '32px 24px',
-          borderRadius: 18,
-          background: 'linear-gradient(135deg, rgba(255,94,120,0.12), rgba(255,177,90,0.12))',
-          border: '1px solid rgba(255,120,120,0.25)',
-          maxWidth: 640,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 14 }}>
-          ADMIN'S OATH ❤️‍🩹
-        </div>
-        <p style={{ fontSize: 14.5, lineHeight: 1.7, color: 'var(--text-dim)', margin: '0 0 18px' }}>
-          As the Alumni Network Admin, I'm always open to supporting anyone who wants to work on an
-          idea, startup, or initiative. I'll make my best efforts to help with websites, resources,
-          connections, agents, or anything else you may need to get started.
-          <br /><br />
-          Feel free to reach out anytime.
-        </p>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, marginBottom: 10 }}>
-          Harsh Pandey
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 18, fontSize: 14 }}>
-          <a
-            href="https://www.linkedin.com/in/harsh-pandey-9a5219303"
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: '#0A66C2', fontWeight: 600, textDecoration: 'none' }}
-          >
-            🔗 LinkedIn
-          </a>
-          <a
-            href="https://www.instagram.com/harshhhh452024/"
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: '#E1306C', fontWeight: 600, textDecoration: 'none' }}
-          >
-            📸 Instagram
-          </a>
-        </div>
-      </div>
     </div>
   );
 }
