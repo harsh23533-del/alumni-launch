@@ -69,6 +69,7 @@ export function buildTabs({ isAuthenticated, role, isAdmin }) {
     return [
       { id: 'home', label: 'Home', icon: 'home', path: '/' },
       { id: 'startups', label: 'Startups', icon: 'browse', path: '/startups' },
+      { id: 'jobs', label: 'Jobs', icon: 'post', path: '/jobs' },
       { id: 'ideas', label: 'Ideas', icon: 'idea', path: '/ideas' },
       { id: 'groups', label: 'Groups', icon: 'groups', path: '/groups' },
       { id: 'sponsors', label: 'Sponsors', icon: 'sponsor', path: '/sponsors' },
