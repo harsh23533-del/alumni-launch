@@ -17,6 +17,7 @@ import PostStartup from './pages/PostStartup';
 import AlumniDashboard from './pages/AlumniDashboard';
 import StudentApplications from './pages/StudentApplications';
 import BrowseJobs from './pages/BrowseJobs';
+import Internships from './pages/Internships';
 import PostJob from './pages/PostJob';
 import JobsDashboard from './pages/JobsDashboard';
 import Chat from './pages/Chat';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/startups" element={<BrowseStartups />} />
           <Route path="/jobs" element={<BrowseJobs />} />
+          <Route path="/internships" element={<Internships />} />
           <Route path="/ideas" element={<Ideas />} />
           <Route path="/groups" element={<Groups />} />
           <Route path="/sponsors" element={<Sponsors />} />
