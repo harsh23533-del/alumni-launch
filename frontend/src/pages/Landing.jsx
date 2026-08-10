@@ -327,7 +327,9 @@ function MediaGallery() {
   const [items, setItems] = useState(null);
 
   useEffect(() => {
-    api.get('/admin/media/public').then((res) => setItems(res.data)).catch(() => setItems([]));
+    api.get('/admin/media/public')
+      .then((res) => setItems(res.data.filter((m) => !(m.title && m.title.toLowerCase().includes('anil')))))
+      .catch(() => setItems([]));
   }, []);
 
   if (items && items.length === 0) return null;
