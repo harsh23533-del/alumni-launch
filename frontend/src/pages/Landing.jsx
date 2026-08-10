@@ -201,7 +201,7 @@ function FounderSection() {
           fontSize: 26,
           fontWeight: 700,
           marginTop: 4,
-          background: 'linear-gradient(90deg, var(--brass), var(--amber))',
+          background: 'linear-gradient(90deg, var(--coral), var(--amber), var(--brass-soft))',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
