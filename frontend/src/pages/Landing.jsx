@@ -149,6 +149,50 @@ export default function Landing() {
         <MediaGallery />
 
         <AdminOathFooter />
+
+        <MembersOfAssociation />
+      </div>
+    </div>
+  );
+}
+
+function MembersOfAssociation() {
+  const members = [
+    { name: 'Sujeet Yadav', url: 'https://www.linkedin.com/in/sujeet-yadav-6207b0288' },
+    { name: 'Atul Singh', url: 'https://www.linkedin.com/in/atul-singh-560308265' },
+    { name: 'Deepak Singh', url: 'https://www.linkedin.com/in/deepak-singh-a325762a4' },
+  ];
+
+  return (
+    <div style={{ marginTop: 40, textAlign: 'center' }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--brass)', marginBottom: 18 }}>
+        Members of Association
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxWidth: 360, margin: '0 auto' }}>
+        {members.map((m) => (
+          <a
+            key={m.url}
+            href={m.url}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 17,
+              padding: '12px 8px',
+              color: 'var(--paper)',
+              textDecoration: 'none',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              transition: 'color 0.15s ease',
+            }}
+          >
+            <span>{m.name}</span>
+            <span style={{ fontSize: 13, opacity: 0.6 }}>🔗</span>
+          </a>
+        ))}
       </div>
     </div>
   );
