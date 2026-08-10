@@ -150,7 +150,64 @@ export default function Landing() {
 
         <AdminOathFooter />
 
+        <FounderSection />
+
         <MembersOfAssociation />
+      </div>
+    </div>
+  );
+}
+
+function mediaUrl2(path) {
+  if (!path) return path;
+  return path.startsWith('http') ? path : `${api.defaults.baseURL}${path}`;
+}
+
+function FounderSection() {
+  const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    api.get('/admin/media/public').then((res) => {
+      const match = res.data.find(
+        (m) => m.media_type === 'image' && m.title && m.title.toLowerCase().includes('anil')
+      );
+      if (match) setPhoto(mediaUrl2(match.file_url));
+    }).catch(() => {});
+  }, []);
+
+  return (
+    <div style={{ marginTop: 56, textAlign: 'center' }}>
+      {photo && (
+        <img
+          src={photo}
+          alt="Prof. Anil Kumar"
+          style={{
+            width: 92,
+            height: 92,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            margin: '0 auto 14px',
+            border: '2px solid var(--brass)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+          }}
+        />
+      )}
+      <div style={{ fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        Under
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 26,
+          fontWeight: 700,
+          marginTop: 4,
+          background: 'linear-gradient(90deg, var(--brass), var(--amber))',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
+      >
+        Prof. Anil Kumar
       </div>
     </div>
   );
