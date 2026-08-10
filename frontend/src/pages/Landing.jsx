@@ -158,9 +158,9 @@ export default function Landing() {
 
 function MembersOfAssociation() {
   const members = [
-    { name: 'Sujeet Yadav', url: 'https://www.linkedin.com/in/sujeet-yadav-6207b0288' },
+    { name: 'sujeet yadav', url: 'https://www.linkedin.com/in/sujeet-yadav-6207b0288' },
     { name: 'Atul Singh', url: 'https://www.linkedin.com/in/atul-singh-560308265' },
-    { name: 'Deepak Singh', url: 'https://www.linkedin.com/in/deepak-singh-a325762a4' },
+    { name: 'deepak singh', url: 'https://www.linkedin.com/in/deepak-singh-a325762a4' },
   ];
 
   return (
