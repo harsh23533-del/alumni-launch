@@ -179,7 +179,7 @@ function MembersOfAssociation() {
               fontFamily: 'var(--font-display)',
               fontSize: 17,
               padding: '12px 8px',
-              color: 'var(--paper)',
+              color: 'var(--ink)',
               textDecoration: 'none',
               borderBottom: '1px solid rgba(255,255,255,0.08)',
               display: 'flex',
