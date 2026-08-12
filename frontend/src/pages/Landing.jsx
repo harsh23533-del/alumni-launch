@@ -218,6 +218,7 @@ function MembersOfAssociation() {
     { name: 'sujeet yadav', url: 'https://www.linkedin.com/in/sujeet-yadav-6207b0288' },
     { name: 'Atul Singh', url: 'https://www.linkedin.com/in/atul-singh-560308265' },
     { name: 'deepak singh', url: 'https://www.linkedin.com/in/deepak-singh-a325762a4' },
+    { name: 'Manshi Maurya', url: 'https://www.linkedin.com/in/manshi-maurya20' },
   ];
 
   return (
