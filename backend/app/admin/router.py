@@ -132,7 +132,6 @@ def delete_govt_job(job_id: str, db: Session = Depends(get_db), admin: User = De
     db.delete(job)
     db.commit()
     return {"message": "deleted"}
-os.makedirs(MEDIA_DIR, exist_ok=True)
 
 
 def _purge_user(db: Session, user_id: str):
